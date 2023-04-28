@@ -104,3 +104,5 @@ function teardown(
   storybookApp?.unmount();
   if (map.has(canvasElement)) map.delete(canvasElement);
 }
+
+console.log("Hello world");
