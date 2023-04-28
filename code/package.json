@@ -332,5 +332,8 @@
         "Other"
       ]
     ]
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.1"
   }
 }
