@@ -1,5 +1,5 @@
 {
-  "name": "@storybook/preview-web",
+  "name": "@junk-temporary-prototypes/preview-web",
   "version": "7.1.0-alpha.10",
   "description": "",
   "keywords": [
@@ -42,8 +42,8 @@
     "prep": "../../../scripts/prepare/facade.ts"
   },
   "dependencies": {
-    "@storybook/client-logger": "7.1.0-alpha.10",
-    "@storybook/preview-api": "7.1.0-alpha.10"
+    "@junk-temporary-prototypes/client-logger": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/preview-api": "7.1.0-alpha.10"
   },
   "publishConfig": {
     "access": "public"
@@ -52,7 +52,7 @@
     "entries": [
       "./src/entry.ts"
     ],
-    "shim": "@storybook/preview-api/dist/preview-web"
+    "shim": "@junk-temporary-prototypes/preview-api/dist/preview-web"
   },
   "gitHead": "e7c833e690dd0d2966ffb7fb806a3bda89a508c8"
 }

@@ -21,7 +21,7 @@
   "license": "MIT",
   "bin": "./index.js",
   "dependencies": {
-    "@storybook/cli": "7.1.0-alpha.10"
+    "@junk-temporary-prototypes/cli": "7.1.0-alpha.10"
   },
   "publishConfig": {
     "access": "public"

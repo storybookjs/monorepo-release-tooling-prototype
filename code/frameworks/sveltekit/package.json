@@ -1,5 +1,5 @@
 {
-  "name": "@storybook/sveltekit",
+  "name": "@junk-temporary-prototypes/sveltekit",
   "version": "7.1.0-alpha.10",
   "description": "Storybook for SvelteKit",
   "keywords": [
@@ -51,9 +51,9 @@
     "prep": "../../../scripts/prepare/bundle.ts"
   },
   "dependencies": {
-    "@storybook/builder-vite": "7.1.0-alpha.10",
-    "@storybook/svelte": "7.1.0-alpha.10",
-    "@storybook/svelte-vite": "7.1.0-alpha.10"
+    "@junk-temporary-prototypes/builder-vite": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/svelte": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/svelte-vite": "7.1.0-alpha.10"
   },
   "devDependencies": {
     "@types/node": "^16.0.0",

@@ -1,5 +1,5 @@
 {
-  "name": "@storybook/addon-backgrounds",
+  "name": "@junk-temporary-prototypes/addon-backgrounds",
   "version": "7.1.0-alpha.10",
   "description": "Switch backgrounds to view components in different settings",
   "keywords": [
@@ -76,14 +76,14 @@
     "prep": "../../../scripts/prepare/bundle.ts"
   },
   "dependencies": {
-    "@storybook/client-logger": "7.1.0-alpha.10",
-    "@storybook/components": "7.1.0-alpha.10",
-    "@storybook/core-events": "7.1.0-alpha.10",
-    "@storybook/global": "^5.0.0",
-    "@storybook/manager-api": "7.1.0-alpha.10",
-    "@storybook/preview-api": "7.1.0-alpha.10",
-    "@storybook/theming": "7.1.0-alpha.10",
-    "@storybook/types": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/client-logger": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/components": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/core-events": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/global": "^5.0.0",
+    "@junk-temporary-prototypes/manager-api": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/preview-api": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/theming": "7.1.0-alpha.10",
+    "@junk-temporary-prototypes/types": "7.1.0-alpha.10",
     "memoizerific": "^1.11.3",
     "ts-dedent": "^2.0.0"
   },
