@@ -1,6 +1,6 @@
 {
   "$schema": "./node_modules/nx/schemas/nx-schema.json",
-  "npmScope": "storybook",
+  "npmScope": "junk-temporary-prototypes",
   "implicitDependencies": {
     "package.json": {
       "dependencies": "*",
