@@ -37,7 +37,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          # This expects you to have a script called release which does a build for your packages and calls changeset publish
+          version: yarn changeset version && yarn install --mode update-lockfile
           publish: yarn task --task compile --start-from never --no-link --debug && yarn changeset publish
           cwd: code
         env:
