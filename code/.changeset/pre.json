@@ -96,5 +96,7 @@
     "@junk-temporary-prototypes/components": "7.0.8",
     "@junk-temporary-prototypes/manager": "7.0.8"
   },
-  "changesets": []
+  "changesets": [
+    "chilled-peas-march"
+  ]
 }
