@@ -4,7 +4,7 @@
   "commit": false,
   "fixed": [["@junk-temporary-prototypes/*"]],
   "linked": [],
-  "access": "restricted",
+  "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": ["@junk-temporary-prototypes/addon-storyshots*"]
