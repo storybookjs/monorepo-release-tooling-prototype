@@ -261,6 +261,9 @@
     "vite-plugin-turbosnap": "^1.0.1",
     "wait-on": "^5.2.1"
   },
+  "devDependencies": {
+    "@changesets/cli": "^2.26.1"
+  },
   "dependenciesMeta": {
     "ejs": {
       "built": false
