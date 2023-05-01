@@ -19,10 +19,6 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
-          cache: 'yarn'
-          cache-dependency-path: |
-            code/yarn.lock
-            scripts/yarn.lock
 
       - name: Cache dependencies
         uses: actions/cache@v3
