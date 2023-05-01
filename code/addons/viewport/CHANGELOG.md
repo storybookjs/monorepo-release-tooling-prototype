@@ -1,5 +1,16 @@
 # @junk-temporary-prototypes/addon-viewport
 
+## 7.1.0-alpha.1
+
+### Patch Changes
+
+- @junk-temporary-prototypes/client-logger@7.1.0-alpha.1
+- @junk-temporary-prototypes/core-events@7.1.0-alpha.1
+- @junk-temporary-prototypes/manager-api@7.1.0-alpha.1
+- @junk-temporary-prototypes/preview-api@7.1.0-alpha.1
+- @junk-temporary-prototypes/theming@7.1.0-alpha.1
+- @junk-temporary-prototypes/components@7.1.0-alpha.1
+
 ## 7.1.0-alpha.0
 
 ### Patch Changes

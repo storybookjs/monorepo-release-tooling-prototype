@@ -1,5 +1,12 @@
 # @junk-temporary-prototypes/preset-vue-webpack
 
+## 7.1.0-alpha.1
+
+### Patch Changes
+
+- @junk-temporary-prototypes/core-webpack@7.1.0-alpha.1
+- @junk-temporary-prototypes/docs-tools@7.1.0-alpha.1
+
 ## 7.1.0-alpha.0
 
 ### Patch Changes
