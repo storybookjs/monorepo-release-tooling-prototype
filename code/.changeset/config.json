@@ -5,7 +5,7 @@
   "fixed": [["@junk-temporary-prototypes/*"]],
   "linked": [],
   "access": "public",
-  "baseBranch": "new-next",
+  "baseBranch": "main",
   "updateInternalDependencies": "patch",
   "ignore": ["@junk-temporary-prototypes/addon-storyshots*"]
 }
