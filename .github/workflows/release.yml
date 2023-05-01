@@ -19,19 +19,20 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16.x
+          cache: 'yarn'
+          cache-dependency-path: |
+            code/yarn.lock
+            scripts/yarn.lock
 
       - name: Install Dependencies
-        run: yarn task --task install --start-from=install --no-link
-
-      - name: Compile
-        run: yarn task --task compile --start-from=compile --no-link
+        run: yarn task --task install --start-from never --no-link
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: yarn changeset publish
+          publish: yarn task --task compile --start-from install --no-link && yarn changeset publish
           cwd: code
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
