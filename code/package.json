@@ -54,7 +54,8 @@
     "storybook:ui:chromatic": "yarn chromatic --build-script-name storybook:ui:build --storybook-config-dir ./ui/.storybook --storybook-base-dir ./code --project-token=${CHROMATIC_TOKEN_STORYBOOK_UI:-MISSING_PROJECT_TOKEN} --only-changed --exit-zero-on-changes --exit-once-uploaded",
     "task": "cd .. && yarn task",
     "test": "NODE_OPTIONS=--max_old_space_size=4096 jest --config ./jest.config.js",
-    "test:cli": "npm --prefix lib/cli run test"
+    "test:cli": "npm --prefix lib/cli run test",
+    "version": "changeset version && yarn install --mode update-lockfile"
   },
   "husky": {
     "hooks": {
