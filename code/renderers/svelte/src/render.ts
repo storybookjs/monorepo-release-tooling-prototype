@@ -105,3 +105,5 @@ export const render: ArgsStoryFn<SvelteRenderer> = (args, context) => {
 
   return { Component, props: args };
 };
+
+console.log('Hello Sveltians!');
