@@ -38,7 +38,7 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          version: yarn changeset version && yarn install --mode update-lockfile
+          version: yarn version
           publish: yarn task --task compile --start-from never --no-link --debug && yarn changeset publish
           cwd: code
         env:
