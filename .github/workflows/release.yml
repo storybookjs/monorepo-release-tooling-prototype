@@ -38,8 +38,8 @@ jobs:
         id: changesets
         uses: changesets/action@v1
         with:
-          version: yarn changeset version && yarn install --mode update-lockfile
-          publish: yarn task --task compile --start-from never --no-link --debug && yarn changeset publish
+          version: yarn version
+          publish: yarn publish:changesets
           cwd: code
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

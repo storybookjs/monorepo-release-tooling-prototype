@@ -42,6 +42,7 @@
     "lint:package": "sort-package-json",
     "local-registry": "ts-node --swc --project=../scripts/tsconfig.json ../scripts/run-registry.ts",
     "publish-sandboxes": "ts-node --swc ../scripts/sandbox/publish.ts",
+    "publish:changesets": "yarn task --task compile --start-from never --no-link --debug && yarn changeset publish",
     "publish:debug": "npm run publish:latest -- --npm-tag=debug --no-push",
     "publish:latest": "lerna publish --exact --concurrency 1 --force-publish",
     "publish:next": "npm run publish:latest -- --npm-tag=next",
