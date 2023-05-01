@@ -5802,7 +5802,7 @@ __metadata:
     process: ^0.11.10
     raf: ^3.4.1
     react: ^16.14.0
-    semver: ^7.3.7
+    semver: 7.4.0
     serve-static: ^1.14.1
     trash: ^7.0.0
     ts-dedent: ^2.0.0
@@ -8923,18 +8923,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/react@npm:*, @types/react@npm:>=16":
-  version: 18.2.0
-  resolution: "@types/react@npm:18.2.0"
-  dependencies:
-    "@types/prop-types": "*"
-    "@types/scheduler": "*"
-    csstype: ^3.0.2
-  checksum: e38f98b7524817459bb1214d39f4cfcb1dd7ffb31992a427b4494f3988aa6195dc349dfb66b299270b399b34568d045bf1cb6230349a6d343e183052ee486eaa
-  languageName: node
-  linkType: hard
-
-"@types/react@npm:^16, @types/react@npm:^16.14.34":
+"@types/react@npm:*, @types/react@npm:>=16, @types/react@npm:^16, @types/react@npm:^16.14.34":
   version: 16.14.40
   resolution: "@types/react@npm:16.14.40"
   dependencies:
@@ -27663,14 +27652,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"semver@npm:7.x, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8":
-  version: 7.5.0
-  resolution: "semver@npm:7.5.0"
+"semver@npm:7.4.0, semver@npm:7.x, semver@npm:^7.0.0, semver@npm:^7.1.1, semver@npm:^7.3.4, semver@npm:^7.3.5, semver@npm:^7.3.7, semver@npm:^7.3.8":
+  version: 7.4.0
+  resolution: "semver@npm:7.4.0"
   dependencies:
     lru-cache: ^6.0.0
   bin:
     semver: bin/semver.js
-  checksum: 203a556d7189c277b9774a325fd2695187b2822069094e0dbfcc56dfd10a1fd646a94e73812f249802a661f6437b2370ccb8ee330e7b9888b38e53c5a8216222
+  checksum: 6bcdd77e3f8fd5a0463358ede593f5b88fb9cf6d1c5f185fb5e1d0e516993cd1ec99b628e300935650d2af39decc3bb67b3101627340de6c39043ea96dfcbd61
   languageName: node
   linkType: hard
 
