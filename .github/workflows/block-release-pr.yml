@@ -1,0 +1,16 @@
+on:
+  pull_request:
+    branches:
+      - main
+      - new-next
+      - release-*
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fail when PR is bumping versions
+        if: github.event.pull_request.title == 'Version Packages'
+        run: |
+          echo "::error Failing so only only admins can merge"
+          exit 1
