@@ -1,5 +1,21 @@
 # @junk-temporary-prototypes/html-vite
 
+## 7.1.0
+
+### Patch Changes
+
+- d7f68b9bec: bump alpha to beta
+- Updated dependencies [d7f68b9bec]
+  - @junk-temporary-prototypes/addons@7.1.0
+  - @junk-temporary-prototypes/builder-vite@7.1.0
+  - @junk-temporary-prototypes/channel-postmessage@7.1.0
+  - @junk-temporary-prototypes/channel-websocket@7.1.0
+  - @junk-temporary-prototypes/client-api@7.1.0
+  - @junk-temporary-prototypes/core-server@7.1.0
+  - @junk-temporary-prototypes/node-logger@7.1.0
+  - @junk-temporary-prototypes/preview-web@7.1.0
+  - @junk-temporary-prototypes/html@7.1.0
+
 ## 7.1.0-beta.2
 
 ### Patch Changes
