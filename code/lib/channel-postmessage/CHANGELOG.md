@@ -1,5 +1,13 @@
 # @junk-temporary-prototypes/channel-postmessage
 
+## 7.1.0-alpha.1
+
+### Patch Changes
+
+- @junk-temporary-prototypes/channels@7.1.0-alpha.1
+- @junk-temporary-prototypes/client-logger@7.1.0-alpha.1
+- @junk-temporary-prototypes/core-events@7.1.0-alpha.1
+
 ## 7.1.0-alpha.0
 
 ### Patch Changes

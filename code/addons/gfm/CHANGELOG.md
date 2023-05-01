@@ -1,5 +1,11 @@
 # @junk-temporary-prototypes/addon-mdx-gfm
 
+## 7.1.0-alpha.1
+
+### Patch Changes
+
+- @junk-temporary-prototypes/node-logger@7.1.0-alpha.1
+
 ## 7.1.0-alpha.0
 
 ### Patch Changes

@@ -1,5 +1,13 @@
 # @junk-temporary-prototypes/codemod
 
+## 7.1.0-alpha.1
+
+### Patch Changes
+
+- @junk-temporary-prototypes/csf-tools@7.1.0-alpha.1
+- @junk-temporary-prototypes/node-logger@7.1.0-alpha.1
+- @junk-temporary-prototypes/types@7.1.0-alpha.1
+
 ## 7.1.0-alpha.0
 
 ### Patch Changes

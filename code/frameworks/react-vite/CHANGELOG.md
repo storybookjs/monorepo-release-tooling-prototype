@@ -1,5 +1,12 @@
 # @junk-temporary-prototypes/react-vite
 
+## 7.1.0-alpha.1
+
+### Patch Changes
+
+- @junk-temporary-prototypes/builder-vite@7.1.0-alpha.1
+- @junk-temporary-prototypes/react@7.1.0-alpha.1
+
 ## 7.1.0-alpha.0
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @junk-temporary-prototypes/svelte
 
+## 7.1.0-alpha.1
+
+### Patch Changes
+
+- 4d7068897d: improve svelte greeting
+  - @junk-temporary-prototypes/client-logger@7.1.0-alpha.1
+  - @junk-temporary-prototypes/core-client@7.1.0-alpha.1
+  - @junk-temporary-prototypes/core-events@7.1.0-alpha.1
+  - @junk-temporary-prototypes/docs-tools@7.1.0-alpha.1
+  - @junk-temporary-prototypes/preview-api@7.1.0-alpha.1
+  - @junk-temporary-prototypes/types@7.1.0-alpha.1
+
 ## 7.1.0-alpha.0
 
 ### Minor Changes

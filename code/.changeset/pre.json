@@ -97,6 +97,7 @@
     "@junk-temporary-prototypes/manager": "7.0.8"
   },
   "changesets": [
-    "chilled-peas-march"
+    "chilled-peas-march",
+    "thirty-rivers-cheat"
   ]
 }
