@@ -1,5 +1,16 @@
 # @junk-temporary-prototypes/vue-vite
 
+## 7.1.0
+
+### Patch Changes
+
+- d7f68b9bec: bump alpha to beta
+- Updated dependencies [d7f68b9bec]
+  - @junk-temporary-prototypes/builder-vite@7.1.0
+  - @junk-temporary-prototypes/core-common@7.1.0
+  - @junk-temporary-prototypes/core-server@7.1.0
+  - @junk-temporary-prototypes/vue@7.1.0
+
 ## 7.1.0-beta.2
 
 ### Patch Changes

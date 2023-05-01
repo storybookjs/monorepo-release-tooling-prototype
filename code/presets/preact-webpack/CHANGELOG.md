@@ -1,5 +1,13 @@
 # @junk-temporary-prototypes/preset-preact-webpack
 
+## 7.1.0
+
+### Patch Changes
+
+- d7f68b9bec: bump alpha to beta
+- Updated dependencies [d7f68b9bec]
+  - @junk-temporary-prototypes/core-webpack@7.1.0
+
 ## 7.1.0-beta.2
 
 ### Patch Changes
