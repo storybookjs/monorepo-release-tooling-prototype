@@ -39,7 +39,7 @@ jobs:
         uses: changesets/action@v1
         with:
           version: yarn version
-          publish: yarn task --task compile --start-from never --no-link --debug && yarn changeset publish
+          publish: yarn publish:changesets
           cwd: code
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
