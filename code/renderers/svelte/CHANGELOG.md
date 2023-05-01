@@ -1,5 +1,23 @@
 # @junk-temporary-prototypes/svelte
 
+## 7.1.0
+
+### Minor Changes
+
+- 1f158112c1: Svelte users will now be greeted, similar to Vue3 users
+
+### Patch Changes
+
+- d7f68b9bec: bump alpha to beta
+- 4d7068897d: improve svelte greeting
+- Updated dependencies [d7f68b9bec]
+  - @junk-temporary-prototypes/client-logger@7.1.0
+  - @junk-temporary-prototypes/core-client@7.1.0
+  - @junk-temporary-prototypes/core-events@7.1.0
+  - @junk-temporary-prototypes/docs-tools@7.1.0
+  - @junk-temporary-prototypes/preview-api@7.1.0
+  - @junk-temporary-prototypes/types@7.1.0
+
 ## 7.1.0-beta.2
 
 ### Patch Changes
