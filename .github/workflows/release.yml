@@ -25,14 +25,14 @@ jobs:
             scripts/yarn.lock
 
       - name: Install Dependencies
-        run: yarn task --task install --start-from never --no-link
+        run: yarn task --task install --start-from never --no-link --debug
 
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           # This expects you to have a script called release which does a build for your packages and calls changeset publish
-          publish: yarn task --task compile --start-from install --no-link && yarn changeset publish
+          publish: yarn task --task compile --start-from never --no-link --debug && yarn changeset publish
           cwd: code
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
