@@ -1,0 +1,7 @@
+# @junk-temporary-prototypes/theming
+
+## 7.0.8
+
+### Patch Changes
+
+- @junk-temporary-prototypes/client-logger@7.0.8
