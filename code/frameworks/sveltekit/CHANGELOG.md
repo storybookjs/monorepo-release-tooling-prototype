@@ -1,5 +1,15 @@
 # @junk-temporary-prototypes/sveltekit
 
+## 7.1.0-beta.2
+
+### Patch Changes
+
+- bump alpha to beta
+- Updated dependencies
+  - @junk-temporary-prototypes/svelte-vite@7.1.0-beta.2
+  - @junk-temporary-prototypes/builder-vite@7.1.0-beta.2
+  - @junk-temporary-prototypes/svelte@7.1.0-beta.2
+
 ## 7.1.0-alpha.1
 
 ### Patch Changes

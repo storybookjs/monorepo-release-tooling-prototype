@@ -1,5 +1,17 @@
 # @junk-temporary-prototypes/preview-api
 
+## 7.1.0-beta.2
+
+### Patch Changes
+
+- bump alpha to beta
+- Updated dependencies
+  - @junk-temporary-prototypes/channel-postmessage@7.1.0-beta.2
+  - @junk-temporary-prototypes/channels@7.1.0-beta.2
+  - @junk-temporary-prototypes/client-logger@7.1.0-beta.2
+  - @junk-temporary-prototypes/core-events@7.1.0-beta.2
+  - @junk-temporary-prototypes/types@7.1.0-beta.2
+
 ## 7.1.0-alpha.1
 
 ### Patch Changes

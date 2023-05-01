@@ -1,5 +1,13 @@
 # @junk-temporary-prototypes/theming
 
+## 7.1.0-beta.2
+
+### Patch Changes
+
+- bump alpha to beta
+- Updated dependencies
+  - @junk-temporary-prototypes/client-logger@7.1.0-beta.2
+
 ## 7.1.0-alpha.1
 
 ### Patch Changes

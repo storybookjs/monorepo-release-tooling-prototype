@@ -1,5 +1,16 @@
 # @junk-temporary-prototypes/vue-webpack5
 
+## 7.1.0-beta.2
+
+### Patch Changes
+
+- bump alpha to beta
+- Updated dependencies
+  - @junk-temporary-prototypes/builder-webpack5@7.1.0-beta.2
+  - @junk-temporary-prototypes/core-common@7.1.0-beta.2
+  - @junk-temporary-prototypes/preset-vue-webpack@7.1.0-beta.2
+  - @junk-temporary-prototypes/vue@7.1.0-beta.2
+
 ## 7.1.0-alpha.1
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @junk-temporary-prototypes/addon-interactions
 
+## 7.1.0-beta.2
+
+### Patch Changes
+
+- bump alpha to beta
+- Updated dependencies
+  - @junk-temporary-prototypes/client-logger@7.1.0-beta.2
+  - @junk-temporary-prototypes/core-common@7.1.0-beta.2
+  - @junk-temporary-prototypes/core-events@7.1.0-beta.2
+  - @junk-temporary-prototypes/instrumenter@7.1.0-beta.2
+  - @junk-temporary-prototypes/manager-api@7.1.0-beta.2
+  - @junk-temporary-prototypes/preview-api@7.1.0-beta.2
+  - @junk-temporary-prototypes/theming@7.1.0-beta.2
+  - @junk-temporary-prototypes/types@7.1.0-beta.2
+  - @junk-temporary-prototypes/components@7.1.0-beta.2
+
 ## 7.1.0-alpha.1
 
 ### Patch Changes
