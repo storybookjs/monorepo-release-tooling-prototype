@@ -1,0 +1,13 @@
+# @junk-temporary-prototypes/cli
+
+## 7.0.8
+
+### Patch Changes
+
+- @junk-temporary-prototypes/codemod@7.0.8
+- @junk-temporary-prototypes/core-common@7.0.8
+- @junk-temporary-prototypes/core-server@7.0.8
+- @junk-temporary-prototypes/csf-tools@7.0.8
+- @junk-temporary-prototypes/node-logger@7.0.8
+- @junk-temporary-prototypes/telemetry@7.0.8
+- @junk-temporary-prototypes/types@7.0.8
