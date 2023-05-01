@@ -24,6 +24,16 @@ jobs:
             code/yarn.lock
             scripts/yarn.lock
 
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.yarn/berry/cache
+          key: yarn-v1-${{ hashFiles('scripts/yarn.lock') }}-${{ hashFiles('code/yarn.lock') }}
+          restore-keys: |
+            yarn-v1-${{ hashFiles('scripts/yarn.lock') }}-
+            yarn-v1-
+
       - name: Install Dependencies
         run: yarn task --task install --start-from never --no-link --debug
 
