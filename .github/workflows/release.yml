@@ -5,13 +5,18 @@ on:
     branches:
       - main
       - new-next
+      - release-*
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+env:
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
 
 jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    environment: ${{ github.event.head_commit.message == 'Version Packages' && 'release' || '' }}
     steps:
       - name: Checkout Repo
         uses: actions/checkout@v3
@@ -21,7 +26,7 @@ jobs:
         with:
           node-version: 16.x
 
-      - name: Cache dependencies
+      - name: Cache Dependencies
         uses: actions/cache@v3
         with:
           path: |
@@ -34,7 +39,7 @@ jobs:
       - name: Install Dependencies
         run: yarn task --task install --start-from never --no-link --debug
 
-      - name: Create Release Pull Request or Publish to npm
+      - name: Create 'Version Packages' Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
