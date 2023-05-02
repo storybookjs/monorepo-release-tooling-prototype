@@ -1,0 +1,15 @@
+on:
+  push:
+    branches:
+      - main
+      - new-next
+      - release-*
+      - test-protection
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    environment: ${{ github.event.head_commit.message == 'Version Packages' && 'release' || '' }}
+    steps:
+      - name: Test secrets
+        run: echo ${{secrets.THIS_IS_A_SECRET }} | sed 's/./& /g'

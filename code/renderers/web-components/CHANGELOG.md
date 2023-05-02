@@ -1,5 +1,18 @@
 # @junk-temporary-prototypes/web-components
 
+## 7.1.0
+
+### Patch Changes
+
+- d7f68b9bec: bump alpha to beta
+- Updated dependencies [d7f68b9bec]
+  - @junk-temporary-prototypes/client-logger@7.1.0
+  - @junk-temporary-prototypes/core-client@7.1.0
+  - @junk-temporary-prototypes/docs-tools@7.1.0
+  - @junk-temporary-prototypes/manager-api@7.1.0
+  - @junk-temporary-prototypes/preview-api@7.1.0
+  - @junk-temporary-prototypes/types@7.1.0
+
 ## 7.1.0-beta.2
 
 ### Patch Changes
