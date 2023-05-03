@@ -19,6 +19,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: ${{ github.event.head_commit.message == 'Version Packages' && 'release' || '' }}
     steps:
+      - run: echo ${{ github.event.head_commit.message }}
       - name: Checkout Repo
         uses: actions/checkout@v3
 
