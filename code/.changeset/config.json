@@ -8,7 +8,7 @@
   "fixed": [
     {
       "group": ["@junk-temporary-prototypes/*"],
-      "changelog": "../CHANGELOG.v7.md",
+      "changelog": "../CHANGELOG.md",
       "name": ""
     }
   ],
@@ -16,5 +16,5 @@
   "access": "public",
   "baseBranch": "main",
   "updateInternalDependencies": "patch",
-  "ignore": []
+  "ignore": ["@junk-temporary-prototypes/addon-storyshots*"]
 }
