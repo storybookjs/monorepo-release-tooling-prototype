@@ -3,6 +3,4 @@
 '@junk-temporary-prototypes/channel-websocket': patch
 ---
 
-This is a changeset with an author
-
-@author jreinhold
+This is a changeset without an author
