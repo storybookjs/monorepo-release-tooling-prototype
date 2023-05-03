@@ -1,8 +1,14 @@
 {
   "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
-  "changelog": "@changesets/cli/changelog",
+  "changelog": "@abizzle/changesets-cli/changelog",
   "commit": false,
-  "fixed": [["@junk-temporary-prototypes/*"]],
+  "fixed": [
+    {
+      "group": ["@junk-temporary-prototypes/*"],
+      "changelog": "../CHANGELOG.v7.md",
+      "name": ""
+    }
+  ],
   "linked": [],
   "access": "public",
   "baseBranch": "main",
