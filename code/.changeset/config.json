@@ -1,6 +1,9 @@
 {
-  "$schema": "https://unpkg.com/@changesets/config@2.3.0/schema.json",
-  "changelog": "@abizzle/changesets-cli/changelog",
+  "$schema": "https://unpkg.com/@abizzle/changesets-config@2.4.0-next.1/schema.json",
+  "changelog": [
+    "@abizzle/changesets-changelog-github",
+    { "repo": "storybookjs/monorepo-release-tooling-prototype" }
+  ],
   "commit": false,
   "fixed": [
     {
