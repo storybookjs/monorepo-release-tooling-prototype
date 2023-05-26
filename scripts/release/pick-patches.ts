@@ -64,7 +64,7 @@ async function getUnpickedPRs(sourceBranch: string): Promise<Array<PR>> {
       repo: REPO,
       order: {
         field: 'UPDATED_AT',
-        direction: 'DESC',
+        direction: 'ASC',
       },
       state: 'MERGED',
     }
@@ -84,10 +84,7 @@ async function getUnpickedPRs(sourceBranch: string): Promise<Array<PR>> {
   }));
 
   const unpickedPRs = prs.filter((pr: any) => !pr.labels.includes(LABEL.PICKED));
-  const branchPRs = unpickedPRs.filter((pr: any) => pr.branch === sourceBranch);
-
-  // PRs in forward chronological order
-  return branchPRs.reverse();
+  return unpickedPRs.filter((pr: any) => pr.branch === sourceBranch);
 }
 
 function formatPR(pr: PR): string {
