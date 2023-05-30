@@ -2,28 +2,25 @@
 import program from 'commander';
 import chalk from 'chalk';
 import { v4 as uuidv4 } from 'uuid';
-import { graphql } from '@octokit/graphql';
 import type { GraphQlQueryResponseData } from '@octokit/graphql';
-import { prompt } from 'prompts';
+import { graphql } from '@octokit/graphql';
+import ora from 'ora';
 
-import { exec } from './utils/exec';
+import { simpleGit } from 'simple-git';
+
+program.name('pick-patches').description('Cherry pick patch PRs back to main');
 
 const logger = console;
 
 const OWNER = 'storybookjs';
-const REPO = 'storybook';
-const SOURCE_BRANCH = 'next';
-
-if (!process.env.GH_TOKEN) {
-  logger.error('GH_TOKEN environment variable must be set, exiting.');
-  process.exit(1);
-}
+const REPO = 'monorepo-release-tooling-prototype';
+const SOURCE_BRANCH = 'next-v2';
 
 const graphqlWithAuth = graphql.defaults({
-  headers: {
-    authorization: `token ${process.env.GH_TOKEN}`,
-  },
+  headers: { authorization: `token ${process.env.GH_TOKEN}` },
 });
+
+const git = simpleGit();
 
 interface PR {
   number: number;
@@ -37,12 +34,9 @@ const LABEL = {
   PATCH: 'patch',
   PICKED: 'picked',
   DOCUMENTATION: 'documentation',
-};
+} as const;
 
-async function getUnpickedPRs(
-  sourceBranch: string,
-  documentationOnly: boolean
-): Promise<Array<PR>> {
+async function getUnpickedPRs(sourceBranch: string): Promise<Array<PR>> {
   const result = await graphqlWithAuth<GraphQlQueryResponseData>(
     `
       query ($owner: String!, $repo: String!, $state: PullRequestState!, $order: IssueOrder!) {
@@ -90,24 +84,20 @@ async function getUnpickedPRs(
     labels: node.labels.nodes.map((l: any) => l.name),
   }));
 
-  const unpickedPRs = prs.filter((pr: any) => !pr.labels.includes(LABEL.PICKED));
-  // logger.log('Unpicked PRs', unpickedPRs.length);
-  const labeledPRs = documentationOnly
-    ? unpickedPRs.filter((pr: any) => pr.labels.includes(LABEL.DOCUMENTATION))
-    : unpickedPRs;
-  // logger.log('Filtered PRs', labeledPRs.length);
-  const branchPRs = labeledPRs.filter((pr: any) => pr.branch === sourceBranch);
-  // logger.log('Branch PRs', branchPRs.length);
+  const unpickedPRs = prs;
+  const branchPRs = unpickedPRs.filter((pr: any) => pr.branch === sourceBranch);
 
   // PRs in forward chronological order
   return branchPRs.reverse();
 }
 
 function formatPR(pr: PR): string {
-  return `https://github.com/${OWNER}/${REPO}/pull/${pr.number} ${chalk.yellow(pr.mergeCommit)}
-  "${pr.title}"`;
+  return `https://github.com/${OWNER}/${REPO}/pull/${pr.number} "${pr.title}" ${chalk.yellow(
+    pr.mergeCommit
+  )}`;
 }
 
+// @ts-expect-error not used atm
 async function getLabelIds(labelNames: string[]) {
   const query = labelNames.join('+');
   const result = await graphqlWithAuth<GraphQlQueryResponseData>(
@@ -139,9 +129,9 @@ async function getLabelIds(labelNames: string[]) {
   return labelToId;
 }
 
+// @ts-expect-error not used atm
 async function labelPR(id: string, labelToId: Record<string, string>) {
-  logger.log('labeling', id);
-  const result = await graphqlWithAuth(
+  await graphqlWithAuth(
     `
       mutation ($input: AddLabelsToLabelableInput!) {
         addLabelsToLabelable(input: $input) {
@@ -157,67 +147,59 @@ async function labelPR(id: string, labelToId: Record<string, string>) {
       },
     }
   );
-
-  logger.log(JSON.stringify(result));
 }
 
-async function pickPR(pr: PR) {
-  logger.log(`Picking ${formatPR(pr)}`);
-  await exec(`git cherry-pick -m1 ${pr.mergeCommit}`);
-}
-
-async function confirm({ sourceBranch, patchPRs, documentationOnly }: any): Promise<boolean> {
-  const what = documentationOnly
-    ? `${patchPRs.length} documentation-only`
-    : `ALL ${patchPRs.length}`;
-
-  const { ok } = await prompt.prompt([
-    {
-      type: 'confirm',
-      message: `Picking ${chalk.bold(chalk.green(what))} PRs from ${chalk.yellow(
-        sourceBranch
-      )}. ${chalk.cyan('Continue?')}`,
-      name: 'ok',
-    },
-  ]);
-  return ok;
-}
-
-interface PickOptions {
-  documentation?: boolean;
-}
-
-export const pick = async (options: PickOptions = {}) => {
-  const documentationOnly = !!options.documentation;
-  const sourceBranch = SOURCE_BRANCH;
-  const labelToId = await getLabelIds(Object.values(LABEL));
-  const patchPRs = await getUnpickedPRs(sourceBranch, documentationOnly);
-
-  patchPRs.forEach((pr) => logger.log(formatPR(pr)));
-
-  if (patchPRs.length === 0 || !(await confirm({ sourceBranch, patchPRs, documentationOnly }))) {
-    return;
+export const run = async (_: unknown) => {
+  if (!process.env.GH_TOKEN) {
+    logger.error('GH_TOKEN environment variable must be set, exiting.');
+    process.exit(1);
   }
 
-  const results = [];
-  for (let i = 0; i < patchPRs.length; i += 1) {
-    const pr = patchPRs[i];
+  const sourceBranch = SOURCE_BRANCH;
+
+  const spinner = ora('Searching for patch PRs to cherry-pick').start();
+
+  // const labelToId = await getLabelIds(Object.values(LABEL));
+  const patchPRs = await getUnpickedPRs(sourceBranch);
+
+  if (patchPRs.length > 0) {
+    spinner.succeed(`Found ${patchPRs.length} PRs to cherry-pick to main.`);
+  } else {
+    spinner.warn('No PRs found.');
+  }
+
+  for (const pr of patchPRs) {
+    const spinner = ora(`Cherry picking #${pr.id}`).start();
+
     try {
-      await pickPR(pr);
-      await labelPR(pr.id, labelToId);
-      results.push({ ok: true, pr });
+      await git.raw(['cherry-pick', '-m', '1', pr.mergeCommit]);
+      // We want to label only when merging the PR
+      // await labelPR(pr.id, labelToId);
+      spinner.succeed(`Picked: ${formatPR(pr)}`);
+      // results.push({ ok: true, pr, error: null });
     } catch (err) {
-      logger.log(chalk.red('aborting'), err);
-      await exec('git cherry-pick --abort');
-      results.push({ ok: false, pr });
+      spinner.fail(`Failed to automatically pick: ${formatPR(pr)}`);
+      const abort = ora(`Aborting cherry pick for merge commit: ${pr.mergeCommit}`).start();
+      try {
+        await git.raw(['cherry-pick', '--abort']);
+        abort.stop();
+      } catch (error) {
+        abort.warn(`Failed to abort cherry pick (${pr.mergeCommit})`);
+      }
+
+      spinner.info(
+        `This PR can be picked manually with: ${chalk.grey(
+          `git cherry-pick -m1 ${pr.mergeCommit}`
+        )}`
+      );
     }
   }
-  results.forEach(({ ok, pr }) => {
-    const status = ok ? chalk.green('OK') : chalk.red('FAIL');
-    logger.log(`${status} ${formatPR(pr)}`);
-  });
 };
 
-program.option('--documentation', 'Only pick documentation PRs');
-const options = program.parse(process.argv) as PickOptions;
-pick(options).then(() => logger.log('✨ done'));
+if (require.main === module) {
+  const options = program.parse(process.argv);
+  run(options).catch((err) => {
+    console.error(err);
+    process.exit(1);
+  });
+}
