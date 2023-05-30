@@ -5,7 +5,6 @@ import { v4 as uuidv4 } from 'uuid';
 import type { GraphQlQueryResponseData } from '@octokit/graphql';
 import { graphql } from '@octokit/graphql';
 import ora from 'ora';
-
 import { simpleGit } from 'simple-git';
 
 program.name('pick-patches').description('Cherry pick patch PRs back to main');
@@ -84,7 +83,7 @@ async function getUnpickedPRs(sourceBranch: string): Promise<Array<PR>> {
     labels: node.labels.nodes.map((l: any) => l.name),
   }));
 
-  const unpickedPRs = prs;
+  const unpickedPRs = prs.filter((pr: any) => !pr.labels.includes(LABEL.PICKED));
   const branchPRs = unpickedPRs.filter((pr: any) => pr.branch === sourceBranch);
 
   // PRs in forward chronological order
