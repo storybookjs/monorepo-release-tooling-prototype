@@ -57,42 +57,35 @@ export const mapToChangelist = ({
   changes: Change[];
   isRelease: boolean;
 }): string => {
-  return (
-    changes
-      .map((change) => {
-        const lines: string[] = [];
-        if (!change.pull) {
-          lines.push(`- **⚠️ Direct commit**: ${change.title} ${change.links.commit}`);
-          if (isRelease) {
-            lines.push('\t- [ ] The change is appropriate for the version bump');
-          }
-          return lines.join('\n');
-        }
-
-        const label = (change.labels
-          ?.filter((l) => Object.keys(LABELS_BY_IMPORTANCE).includes(l))
-          .sort(
-            (a, b) =>
-              Object.keys(LABELS_BY_IMPORTANCE).indexOf(a) -
-              Object.keys(LABELS_BY_IMPORTANCE).indexOf(b)
-          )[0] || 'unknown') as keyof typeof LABELS_BY_IMPORTANCE;
-
-        lines.push(`- **${LABELS_BY_IMPORTANCE[label]}**: ${change.title} ${change.links.pull}`);
-
+  return changes
+    .map((change) => {
+      const lines: string[] = [];
+      if (!change.pull) {
+        lines.push(`- **⚠️ Direct commit**: ${change.title} ${change.links.commit}`);
         if (isRelease) {
           lines.push('\t- [ ] The change is appropriate for the version bump');
-          lines.push('\t- [ ] The PR is labeled correctly');
-          lines.push('\t- [ ] The PR title is correct');
         }
         return lines.join('\n');
-      })
-      .join('\n')
-      // don't mention contributors in the release PR, to avoid spamming them
-      .replaceAll('[@', '[@ ')
-      .replaceAll('"', '\\"')
-      .replaceAll('`', '\\`')
-      .replaceAll("'", "\\'")
-  );
+      }
+
+      const label = (change.labels
+        ?.filter((l) => Object.keys(LABELS_BY_IMPORTANCE).includes(l))
+        .sort(
+          (a, b) =>
+            Object.keys(LABELS_BY_IMPORTANCE).indexOf(a) -
+            Object.keys(LABELS_BY_IMPORTANCE).indexOf(b)
+        )[0] || 'unknown') as keyof typeof LABELS_BY_IMPORTANCE;
+
+      lines.push(`- **${LABELS_BY_IMPORTANCE[label]}**: ${change.title} ${change.links.pull}`);
+
+      if (isRelease) {
+        lines.push('\t- [ ] The change is appropriate for the version bump');
+        lines.push('\t- [ ] The PR is labeled correctly');
+        lines.push('\t- [ ] The PR title is correct');
+      }
+      return lines.join('\n');
+    })
+    .join('\n');
 };
 
 export const generateReleaseDescription = ({
@@ -106,15 +99,9 @@ export const generateReleaseDescription = ({
   changeList: string;
   changelogText: string;
 }): string => {
-  // don't mention contributors in the release PR, to avoid spamming them
-  const escapedChangelog = changelogText
-    .replaceAll('[@', '[@ ')
-    .replaceAll('"', '\\"')
-    .replaceAll('`', '\\`')
-    .replaceAll("'", "\\'");
-
-  return dedent`This is an automated pull request that bumps the version from \\\`${currentVersion}\\\` to \\\`${nextVersion}\\\`.
-  Once this pull request is merged, it will trigger a new release of version \\\`${nextVersion}\\\`.
+  return (
+    dedent`This is an automated pull request that bumps the version from \`${currentVersion}\` to \`${nextVersion}\`.
+  Once this pull request is merged, it will trigger a new release of version \`${nextVersion}\`.
   If you're not a core maintainer with permissions to release you can ignore this pull request.
 
   ## To do
@@ -132,7 +119,7 @@ export const generateReleaseDescription = ({
       - First word of summary indicates the type: “Add”, “Fix”, “Upgrade”, etc.
       - The entire title should fit on a line
   
-  This is a list of all the PRs merged and commits pushed directly to \\\`next\\\`, that will be part of this release:
+  This is a list of all the PRs merged and commits pushed directly to \`next\`, that will be part of this release:
   
   ${changeList}
 
@@ -146,14 +133,21 @@ export const generateReleaseDescription = ({
   
   # Generated changelog
   
-  ${escapedChangelog}`;
+  ${changelogText}`
+      // don't mention contributors in the release PR, to avoid spamming them
+      .replaceAll('[@', '[@ ')
+      .replaceAll('"', '\\"')
+      .replaceAll('`', '\\`')
+      .replaceAll("'", "\\'")
+  );
 };
 
 export const generateNonReleaseDescription = (changeList: string): string => {
-  return dedent`This is an automated pull request. None of the changes requires a version bump, they are only internal or documentation related. Merging this PR will not trigger a new release, but documentation will be updated.
+  return (
+    dedent`This is an automated pull request. None of the changes requires a version bump, they are only internal or documentation related. Merging this PR will not trigger a new release, but documentation will be updated.
   If you're not a core maintainer with permissions to release you can ignore this pull request.
   
-  This is a list of all the PRs merged and commits pushed directly to \\\`next\\\` since the last release:
+  This is a list of all the PRs merged and commits pushed directly to \`next\` since the last release:
   
   ${changeList}
 
@@ -161,7 +155,13 @@ export const generateNonReleaseDescription = (changeList: string): string => {
   
   When everything above is done:
   - [ ] Merge this PR
-  - [ ] [Approve the publish workflow run](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/publish.yml)`;
+  - [ ] [Approve the publish workflow run](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/publish.yml)`
+      // don't mention contributors in the release PR, to avoid spamming them
+      .replaceAll('[@', '[@ ')
+      .replaceAll('"', '\\"')
+      .replaceAll('`', '\\`')
+      .replaceAll("'", "\\'")
+  );
 };
 
 export const run = async (options: unknown) => {
