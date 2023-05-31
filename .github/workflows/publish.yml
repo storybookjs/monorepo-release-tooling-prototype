@@ -14,6 +14,9 @@ env:
 permissions:
   contents: write
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref_name }}
+
 jobs:
   publish:
     name: Publish new version
@@ -46,16 +49,16 @@ jobs:
 
       - name: Get current version
         id: version
-        run: ./node_modules/.bin/ts-node --swc ./release/utils/get-current-version.ts
+        run: yarn release:get-current-version
 
       - name: Check if publish is needed
         id: publish-needed
-        run: ./node_modules/.bin/ts-node --swc ./release/utils/is-version-published.ts ${{ steps.version.outputs.current-version }}
+        run: yarn release:is-version-published ${{ steps.version.outputs.current-version }}
 
       - name: Check release vs prerelease
         if: steps.publish-needed.outputs.published != 'true'
         id: is-prerelease
-        run: ./node_modules/.bin/ts-node --swc ./release/utils/is-prerelease.ts
+        run: yarn release:is-prerelease
 
       - name: Install code dependencies
         if: steps.publish-needed.outputs.published != 'true'
@@ -84,7 +87,7 @@ jobs:
       - name: Get changelog for ${{ steps.version.outputs.current-version }}}
         if: steps.publish-needed.outputs.published != 'true'
         id: changelog
-        run: ./node_modules/.bin/ts-node --swc ./release/utils/get-changelog-entry.ts ${{ steps.version.outputs.current-version }}
+        run: yarn release:get-changelog-from-file ${{ steps.version.outputs.current-version }}
 
       - name: Create GitHub Release
         if: steps.publish-needed.outputs.published != 'true'
@@ -95,7 +98,7 @@ jobs:
           ${{ steps.version.outputs.current-version }} \
             --repo "${{ github.repository }}" \
             --target main-v2 \
-            --title "${{ steps.version.outputs.current-version }}" \
+            --title "v${{ steps.version.outputs.current-version }}" \
             --notes "${{ steps.changelog.outputs.changelog }}" \
             ${{ steps.is-prerelease.outputs.prerelease && '--prerelease' || '' }}
 
@@ -112,10 +115,10 @@ jobs:
           git push origin main-v2
           - name: The job has failed
 
-      - name: Report job failure to Discord
-        if: failure()
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_MONITORING_URL }}
-        uses: Ilshidur/action-discord@master
-        with:
-          args: 'The GitHub Action for publishing version ${{ steps.version.outputs.current-version }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+      # - name: Report job failure to Discord
+      #   if: failure()
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_MONITORING_URL }}
+      #   uses: Ilshidur/action-discord@master
+      #   with:
+      #     args: 'The GitHub Action for publishing version ${{ steps.version.outputs.current-version }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'

@@ -4,7 +4,7 @@ run-name: Prepare prerelease PR, triggered by ${{ github.triggering_actor }}
 on:
   push:
     branches:
-      - main-v2
+      - next-v2
   workflow_dispatch:
     inputs:
       release-type:
@@ -29,6 +29,10 @@ env:
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
   PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
 
+concurrency:
+  group: ${{ github.workflow }}
+  cancel-in-progress: true
+
 jobs:
   prepare-prerelease-pull-request:
     name: Prepare prerelease pull request
@@ -37,10 +41,10 @@ jobs:
       run:
         working-directory: scripts
     steps:
-      - name: Checkout main-v2
+      - name: Checkout next-v2
         uses: actions/checkout@v3
         with:
-          ref: main-v2
+          ref: next-v2
           # this needs to be set to a high enough number that it will contain the last version tag
           # as of May 2023, the whole repo had 55K commits
           fetch-depth: 10000
@@ -66,7 +70,7 @@ jobs:
         id: check-frozen
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: ./node_modules/.bin/ts-node --swc ./release/is-pr-frozen.ts
+        run: yarn release:is-pr-frozen
 
       - name: Cancel when frozen
         if: steps.check-frozen.outputs.frozen == 'true' && github.event_name != 'workflow_dispatch'
@@ -101,10 +105,14 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -b version-from-${{ steps.version.outputs.current-version }}
           git add .
-          git commit -m "bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
+          git commit -m "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
           git push --force origin version-from-${{ steps.version.outputs.current-version }}
 
-      # TODO: generate PR description
+      - name: Generate PR description
+        id: description
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn release:generate-pr-description --current-version=${{ steps.version.outputs.current-version }} --next-version=${{ steps.version.outputs.next-version }} --verbose
 
       - name: Create or update pull request
         env:
@@ -113,19 +121,19 @@ jobs:
           gh pr edit \
             --repo "${{github.repository }}"\
             --title "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
-            --body "This is an automated pull request to bump the version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}. Please review and merge this pull request to release the new version." \
+            --body "${{ steps.description.outputs.description }}" \
           || \
           gh pr create \
             --repo "${{github.repository }}"\
             --title "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
-            --body "This is an automated pull request to bump the version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}. Please review and merge this pull request to release the new version." \
-            --base main-v2-release \
+            --body "${{ steps.description.outputs.description }}" \
+            --base next-v2-release \
             --head version-from-${{ steps.version.outputs.current-version }}
 
-      - name: Report job failure to Discord
-        if: failure()
-        env:
-          DISCORD_WEBHOOK: ${{ secrets.DISCORD_MONITORING_URL }}
-        uses: Ilshidur/action-discord@master
-        with:
-          args: 'The GitHub Action for preparing the release pull request bumping from v${{ steps.version.outputs.current-version }} to v${{ steps.version.outputs.next-version }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+      # - name: Report job failure to Discord
+      #   if: failure()
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_MONITORING_URL }}
+      #   uses: Ilshidur/action-discord@master
+      #   with:
+      #     args: 'The GitHub Action for preparing the release pull request bumping from v${{ steps.version.outputs.current-version }} to v${{ steps.version.outputs.next-version }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
