@@ -232,7 +232,7 @@ export const getChanges = async ({
   const repo = await getRepo(verbose);
   const pullRequests = await getPullInfoFromCommits({ repo, commits, verbose }).catch((err) => {
     console.error(
-      `🚨 Could not get pull requests from commits, this is usually because you have unpushed commits`
+      `🚨 Could not get pull requests from commits, this is usually because you have unpushed commits, or you haven't set the GH_TOKEN environment variable`
     );
     console.error(err);
     throw err;
