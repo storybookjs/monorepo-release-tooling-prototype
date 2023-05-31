@@ -81,6 +81,10 @@ jobs:
           gh run cancel ${{ github.run_id }}
           gh run watch ${{ github.run_id }}
 
+      # tags are needed to get changes and changelog generation
+      - name: Fetch git tags
+        run: git fetch --tags origin
+
       - name: Check for unreleased changes
         id: unreleased-changes
         env:
@@ -92,10 +96,6 @@ jobs:
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         run: |
           yarn release:version --release-type ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('{0} {1}', '--pre-id', inputs.pre-id) }} --verbose
-
-      # tags are needed for the changelog generation
-      - name: Fetch git tags
-        run: git fetch --tags origin
 
       - name: Write changelog
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
