@@ -58,6 +58,7 @@ export const mapToChangelist = ({
   isRelease: boolean;
 }): string => {
   return changes
+    .filter((change) => !change.title.startsWith('bump version from'))
     .map((change) => {
       const lines: string[] = [];
       if (!change.pull) {
