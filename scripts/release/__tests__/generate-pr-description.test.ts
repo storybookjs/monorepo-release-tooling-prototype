@@ -22,7 +22,7 @@ describe('Generate PR Description', () => {
       },
       {
         user: 'shilman',
-        title: 'Some title for a direct commit',
+        title: 'Some title for a "direct commit"',
         labels: null,
         commit: '22bb11',
         pull: null,
@@ -34,7 +34,7 @@ describe('Generate PR Description', () => {
       },
       {
         user: 'shilman',
-        title: 'Another PR title for docs',
+        title: 'Another PR `title` for docs',
         labels: ['another label', 'documentation'],
         commit: 'ddd222',
         pull: '11',
@@ -46,7 +46,7 @@ describe('Generate PR Description', () => {
       },
       {
         user: 'JReinhold',
-        title: 'Some PR title for a new feature',
+        title: "Some PR title for a 'new' feature",
         labels: ['feature request', 'other label'],
         commit: 'wow1337',
         pull: '48',
@@ -75,13 +75,13 @@ describe('Generate PR Description', () => {
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
-        - **⚠️ Direct commit**: Some title for a direct commit [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
+        - **⚠️ Direct commit**: Some title for a \\"direct commit\\" [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
         	- [ ] The change is appropriate for the version bump
-        - **📝 Documentation**: Another PR title for docs [#11](https://github.com/storybookjs/storybook/pull/11)
+        - **📝 Documentation**: Another PR \\\`title\\\` for docs [#11](https://github.com/storybookjs/storybook/pull/11)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
-        - **✨ Feature Request**: Some PR title for a new feature [#48](https://github.com/storybookjs/storybook/pull/48)
+        - **✨ Feature Request**: Some PR title for a \\'new\\' feature [#48](https://github.com/storybookjs/storybook/pull/48)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
@@ -94,9 +94,9 @@ describe('Generate PR Description', () => {
     it('should return a correct string for non-releases', () => {
       expect(mapToChangelist({ changes, isRelease: false })).toMatchInlineSnapshot(`
         "- **🐛 Bug**: Some PR title for a bug [#42](https://github.com/storybookjs/storybook/pull/42)
-        - **⚠️ Direct commit**: Some title for a direct commit [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
-        - **📝 Documentation**: Another PR title for docs [#11](https://github.com/storybookjs/storybook/pull/11)
-        - **✨ Feature Request**: Some PR title for a new feature [#48](https://github.com/storybookjs/storybook/pull/48)
+        - **⚠️ Direct commit**: Some title for a \\"direct commit\\" [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
+        - **📝 Documentation**: Another PR \\\`title\\\` for docs [#11](https://github.com/storybookjs/storybook/pull/11)
+        - **✨ Feature Request**: Some PR title for a \\'new\\' feature [#48](https://github.com/storybookjs/storybook/pull/48)
         - **⚠️ Missing Label**: Some PR title with a missing label [#77](https://github.com/storybookjs/storybook/pull/77)"
       `);
     });
@@ -107,13 +107,13 @@ describe('Generate PR Description', () => {
 \t- [ ] The change is appropriate for the version bump
 \t- [ ] The PR is labeled correctly
 \t- [ ] The PR title is correct
-- **⚠️ Direct commit**: Some title for a direct commit [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
+- **⚠️ Direct commit**: Some title for a \\"direct commit\\" [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
 \t- [ ] The change is appropriate for the version bump
-- **📝 Documentation**: Another PR title for docs [#11](https://github.com/storybookjs/storybook/pull/11)
+- **📝 Documentation**: Another PR \\\`title\\\` for docs [#11](https://github.com/storybookjs/storybook/pull/11)
 \t- [ ] The change is appropriate for the version bump
 \t- [ ] The PR is labeled correctly
 \t- [ ] The PR title is correct
-- **✨ Feature Request**: Some PR title for a new feature [#48](https://github.com/storybookjs/storybook/pull/48)
+- **✨ Feature Request**: Some PR title for a \\'new\\' feature [#48](https://github.com/storybookjs/storybook/pull/48)
 \t- [ ] The change is appropriate for the version bump
 \t- [ ] The PR is labeled correctly
 \t- [ ] The PR title is correct
@@ -125,8 +125,9 @@ describe('Generate PR Description', () => {
     it('should return a correct string for releases', () => {
       const changelogText = `## 7.1.0-alpha.11
 
-- Some PR title for a bug [#42](https://github.com/storybookjs/storybook/pull/42), thanks [@JReinhold](https://github.com/JReinhold)
-- Some PR title for a feature request [#48](https://github.com/storybookjs/storybook/pull/48), thanks [@JReinhold](https://github.com/JReinhold)`;
+- Some PR \`title\` for a bug [#42](https://github.com/storybookjs/storybook/pull/42), thanks [@JReinhold](https://github.com/JReinhold)
+- Some PR 'title' for a feature request [#48](https://github.com/storybookjs/storybook/pull/48), thanks [@JReinhold](https://github.com/JReinhold)
+- Antoher PR "title" for maintainance [#49](https://github.com/storybookjs/storybook/pull/49), thanks [@JReinhold](https://github.com/JReinhold)`;
       expect(
         generateReleaseDescription({
           currentVersion: '7.1.0-alpha.10',
@@ -135,8 +136,8 @@ describe('Generate PR Description', () => {
           changelogText,
         })
       ).toMatchInlineSnapshot(`
-        "This is an automated pull request that bumps the version from \`7.1.0-alpha.10\` to \`7.1.0-alpha.11\`.
-        Once this pull request is merged, it will trigger a new release of version \`7.1.0-alpha.11\`.
+        "This is an automated pull request that bumps the version from \\\`7.1.0-alpha.10\\\` to \\\`7.1.0-alpha.11\\\`.
+        Once this pull request is merged, it will trigger a new release of version \\\`7.1.0-alpha.11\\\`.
         If you're not a core maintainer with permissions to release you can ignore this pull request.
 
         ## To do
@@ -154,19 +155,19 @@ describe('Generate PR Description', () => {
             - First word of summary indicates the type: “Add”, “Fix”, “Upgrade”, etc.
             - The entire title should fit on a line
 
-        This is a list of all the PRs merged and commits pushed directly to \`next\`, that will be part of this release:
+        This is a list of all the PRs merged and commits pushed directly to \\\`next\\\`, that will be part of this release:
 
         - **🐛 Bug**: Some PR title for a bug [#42](https://github.com/storybookjs/storybook/pull/42)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
-        - **⚠️ Direct commit**: Some title for a direct commit [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
+        - **⚠️ Direct commit**: Some title for a \\"direct commit\\" [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
         	- [ ] The change is appropriate for the version bump
-        - **📝 Documentation**: Another PR title for docs [#11](https://github.com/storybookjs/storybook/pull/11)
+        - **📝 Documentation**: Another PR \\\`title\\\` for docs [#11](https://github.com/storybookjs/storybook/pull/11)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
-        - **✨ Feature Request**: Some PR title for a new feature [#48](https://github.com/storybookjs/storybook/pull/48)
+        - **✨ Feature Request**: Some PR title for a \\'new\\' feature [#48](https://github.com/storybookjs/storybook/pull/48)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
@@ -187,8 +188,9 @@ describe('Generate PR Description', () => {
 
         ## 7.1.0-alpha.11
 
-        - Some PR title for a bug [#42](https://github.com/storybookjs/storybook/pull/42), thanks [@ JReinhold](https://github.com/JReinhold)
-        - Some PR title for a feature request [#48](https://github.com/storybookjs/storybook/pull/48), thanks [@ JReinhold](https://github.com/JReinhold)"
+        - Some PR \\\`title\\\` for a bug [#42](https://github.com/storybookjs/storybook/pull/42), thanks [@ JReinhold](https://github.com/JReinhold)
+        - Some PR \\'title\\' for a feature request [#48](https://github.com/storybookjs/storybook/pull/48), thanks [@ JReinhold](https://github.com/JReinhold)
+        - Antoher PR \\"title\\" for maintainance [#49](https://github.com/storybookjs/storybook/pull/49), thanks [@ JReinhold](https://github.com/JReinhold)"
       `);
     });
 
@@ -197,19 +199,19 @@ describe('Generate PR Description', () => {
         "This is an automated pull request. None of the changes requires a version bump, they are only internal or documentation related. Merging this PR will not trigger a new release, but documentation will be updated.
         If you're not a core maintainer with permissions to release you can ignore this pull request.
 
-        This is a list of all the PRs merged and commits pushed directly to \`next\` since the last release:
+        This is a list of all the PRs merged and commits pushed directly to \\\`next\\\` since the last release:
 
         - **🐛 Bug**: Some PR title for a bug [#42](https://github.com/storybookjs/storybook/pull/42)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
-        - **⚠️ Direct commit**: Some title for a direct commit [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
+        - **⚠️ Direct commit**: Some title for a \\"direct commit\\" [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
         	- [ ] The change is appropriate for the version bump
-        - **📝 Documentation**: Another PR title for docs [#11](https://github.com/storybookjs/storybook/pull/11)
+        - **📝 Documentation**: Another PR \\\`title\\\` for docs [#11](https://github.com/storybookjs/storybook/pull/11)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
-        - **✨ Feature Request**: Some PR title for a new feature [#48](https://github.com/storybookjs/storybook/pull/48)
+        - **✨ Feature Request**: Some PR title for a \\'new\\' feature [#48](https://github.com/storybookjs/storybook/pull/48)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
