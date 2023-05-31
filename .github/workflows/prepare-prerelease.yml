@@ -105,7 +105,7 @@ jobs:
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
           git checkout -b version-from-${{ steps.version.outputs.current-version }}
           git add .
-          git commit -m "bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
+          git commit -m "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
           git push --force origin version-from-${{ steps.version.outputs.current-version }}
 
       - name: Generate PR description

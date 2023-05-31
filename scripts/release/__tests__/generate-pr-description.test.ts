@@ -21,11 +21,11 @@ describe('Generate PR Description', () => {
         },
       },
       {
-        // this bump version commit should be ignored
+        // this Bump version commit should be ignored
         user: 'github-actions[bot]',
         pull: null,
         commit: '012b58140c3606efeacbe99c0c410624b0a1ed1f',
-        title: 'bump version from 7.2.0-alpha.3 to 7.2.0-alpha.4',
+        title: 'Bump version from 7.2.0-alpha.3 to 7.2.0-alpha.4',
         labels: null,
         links: {
           commit:
