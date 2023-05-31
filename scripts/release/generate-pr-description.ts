@@ -48,7 +48,7 @@ const LABELS_BY_IMPORTANCE = {
   maintenance: '🔧 Maintenance',
   documentation: '📝 Documentation',
   build: '🏗️ Build',
-  unknown: '⚠️ Missing Label',
+  unknown: '❔ Missing Label',
 } as const;
 
 export const mapToChangelist = ({

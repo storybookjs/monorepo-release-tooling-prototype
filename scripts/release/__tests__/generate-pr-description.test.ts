@@ -99,7 +99,7 @@ describe('Generate PR Description', () => {
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
-        - **⚠️ Missing Label**: Some PR title with a missing label [#77](https://github.com/storybookjs/storybook/pull/77)
+        - **❔ Missing Label**: Some PR title with a missing label [#77](https://github.com/storybookjs/storybook/pull/77)
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct"
@@ -111,7 +111,7 @@ describe('Generate PR Description', () => {
         - **⚠️ Direct commit**: Some title for a "direct commit" [22bb11](https://github.com/storybookjs/storybook/commit/22bb11)
         - **📝 Documentation**: Another PR \`title\` for docs [#11](https://github.com/storybookjs/storybook/pull/11)
         - **✨ Feature Request**: Some PR title for a 'new' feature [#48](https://github.com/storybookjs/storybook/pull/48)
-        - **⚠️ Missing Label**: Some PR title with a missing label [#77](https://github.com/storybookjs/storybook/pull/77)"
+        - **❔ Missing Label**: Some PR title with a missing label [#77](https://github.com/storybookjs/storybook/pull/77)"
       `);
     });
   });
