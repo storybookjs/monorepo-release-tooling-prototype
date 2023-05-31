@@ -72,7 +72,7 @@ export const run = async (
   const hasChangesToRelease = changesToRelease.length > 0;
 
   if (process.env.GITHUB_ACTIONS === 'true') {
-    setOutput('changesToRelease', hasChangesToRelease);
+    setOutput('has-changes-to-release', hasChangesToRelease);
   }
   if (hasChangesToRelease) {
     console.log(

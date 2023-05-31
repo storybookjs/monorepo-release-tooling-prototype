@@ -9,6 +9,7 @@ import dedent from 'ts-dedent';
 import { setOutput } from '@actions/core';
 import type { Change } from './utils/get-changes';
 import { getChanges } from './utils/get-changes';
+import { getCurrentVersion } from './get-current-version';
 
 program
   .name('generate-pr-description')
@@ -169,13 +170,15 @@ export const run = async (options: unknown) => {
   if (!validateOptions(options)) {
     return;
   }
-  const { currentVersion, nextVersion, patchesOnly, verbose } = options;
+  const { nextVersion, patchesOnly, verbose } = options;
 
   if (!nextVersion) {
     console.log(
       '🚨 --next-version option not specificed, generating PR description assuming no release is needed'
     );
   }
+
+  const currentVersion = options.currentVersion || (await getCurrentVersion());
 
   console.log(
     `💬 Generating PR description for ${chalk.blue(nextVersion)} between ${chalk.green(
