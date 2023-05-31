@@ -110,6 +110,8 @@ jobs:
 
       - name: Generate PR description
         id: description
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn release:generate-pr-description --current-version=${{ steps.version.outputs.current-version }} --next-version=${{ steps.version.outputs.next-version }} --verbose
 
       - name: Create or update pull request
