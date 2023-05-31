@@ -95,7 +95,7 @@ jobs:
         id: version
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         run: |
-          yarn release:version --release-type ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('{0} {1}', '--pre-id', inputs.pre-id) }} --verbose
+          yarn release:version --release-type ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('{0} {1}', '--pre-id', inputs.pre-id) || '' }} --verbose
 
       - name: Write changelog
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
@@ -118,7 +118,7 @@ jobs:
         id: description
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:generate-pr-description ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0} {1} {3} {4}', '--current-version', steps.version.outputs.current-version, '--next-version', steps.version.outputs.next-version) }} --verbose
+        run: yarn release:generate-pr-description ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0} {1} {3} {4}', '--current-version', steps.version.outputs.current-version, '--next-version', steps.version.outputs.next-version) || '' }} --verbose
 
       - name: Create or update pull request
         env:
