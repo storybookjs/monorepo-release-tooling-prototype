@@ -113,7 +113,6 @@ jobs:
           git checkout main-v2
           git merge ${{ steps.target.outputs.target }}
           git push origin main-v2
-          - name: The job has failed
 
       # - name: Report job failure to Discord
       #   if: failure()
