@@ -15,7 +15,7 @@ program
   .name('are-changes-unreleased')
   .description('check if any changes since a release should be released')
   .option(
-    '-F, --from',
+    '-F, --from <version>',
     'Which version/tag/commit to go back and check changes from. Defaults to latest release tag'
   )
   .option('-P, --patches-only', 'Set to only consider PRs labeled with "patch" label')
@@ -51,6 +51,10 @@ export const run = async (
 
   const currentVersion = await getCurrentVersion();
 
+  console.log(
+    `📐 Checking if there are any unreleased changes between ${from || currentVersion} and HEAD...`
+  );
+
   const { changes } = await getChanges({
     version: currentVersion,
     from,
@@ -72,11 +76,11 @@ export const run = async (
   }
   if (hasChangesToRelease) {
     console.log(
-      `🦋 The following changes are releasable:
-  ${chalk.blue(changesToRelease.map(({ title, pull }) => `#${pull}: ${title}`).join('\n'))}`
+      `${chalk.green('🦋 The following changes are releasable')}:
+${chalk.blue(changesToRelease.map(({ title, pull }) => `  #${pull}: ${title}`).join('\n'))}`
     );
   } else {
-    console.log(`🫙 No changes to release!`);
+    console.log(chalk.red('🫙 No changes to release!'));
   }
 
   return { changesToRelease, hasChangesToRelease };
