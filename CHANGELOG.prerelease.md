@@ -1,3 +1,8 @@
+## 7.2.0-alpha.4
+
+- Fix: React Vite crashes on startup - [#30](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/30), thanks [@JReinhold](https://github.com/JReinhold)!
+- fix perf regression by upgrading from Yarn to Yann - [#27](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/27), thanks [@JReinhold](https://github.com/JReinhold)!
+
 ## 7.2.0-alpha.3
 
 - Fix: React Vite crashes on startup - [#30](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/30), thanks [@JReinhold](https://github.com/JReinhold)!
