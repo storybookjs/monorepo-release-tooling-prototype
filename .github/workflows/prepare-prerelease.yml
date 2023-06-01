@@ -92,7 +92,7 @@ jobs:
         run: yarn release:unreleased-changes-exists
 
       - name: Cancel when no release necessary
-        if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
+        if: steps.unreleased-changes.outputs.has-changes-to-release == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         # From https://stackoverflow.com/a/75809743
