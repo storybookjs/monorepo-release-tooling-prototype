@@ -91,14 +91,21 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn release:unreleased-changes-exists
 
+      - name: Cancel when no release necessary
+        if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        # From https://stackoverflow.com/a/75809743
+        run: |
+          gh run cancel ${{ github.run_id }}
+          gh run watch ${{ github.run_id }}
+
       - name: Bump version
         id: version
-        if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         run: |
           yarn release:version --release-type ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('{0} {1}', '--pre-id', inputs.pre-id) || '' }} --verbose
 
       - name: Write changelog
-        if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
@@ -118,7 +125,7 @@ jobs:
         id: description
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:generate-pr-description ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0} {1} {3} {4}', '--current-version', steps.version.outputs.current-version, '--next-version', steps.version.outputs.next-version) || '' }} --verbose
+        run: yarn release:generate-pr-description --current-version ${{ steps.version.outputs.current-version }} --next-version ${{ steps.version.outputs.next-version }} --verbose
 
       - name: Create or update pull request
         env:
