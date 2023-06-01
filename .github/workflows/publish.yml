@@ -4,8 +4,8 @@ run-name: Publish new version, triggered by ${{ github.triggering_actor }}
 on:
   push:
     branches:
-      - main-v2-release
-      - next-v2-release
+      - release/main-v2
+      - release/next-v2
 
 env:
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
@@ -73,7 +73,7 @@ jobs:
 
       - name: Get target branch
         id: target
-        run: echo "target=${{ github.ref_name == 'next-v2-release' && 'next-v2' || 'main-v2' }}" >> $GITHUB_OUTPUT
+        run: echo "target=${{ github.ref_name == 'release/next-v2' && 'next-v2' || 'main-v2' }}" >> $GITHUB_OUTPUT
 
       - name: Merge ${{ github.ref_name }} into ${{ steps.target.outputs.target }}
         run: |
