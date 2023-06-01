@@ -15,16 +15,16 @@ import { execaCommand } from '../utils/exec';
 program
   .name('publish')
   .description('publish all packages')
-  .option(
+  .requiredOption(
     '-T, --tag <tag>',
-    'Specify which distribution tag to set for the version being published'
+    'Specify which distribution tag to set for the version being published. Required, since leaving it undefined would publish with the "latest" tag'
   )
   .option('-D, --dry-run', 'Do not publish, only output to shell', false)
   .option('-V, --verbose', 'Enable verbose logging', false);
 
 const optionsSchema = z
   .object({
-    tag: z.string().optional(),
+    tag: z.string(),
     verbose: z.boolean().optional(),
     dryRun: z.boolean().optional(),
   })
@@ -34,7 +34,7 @@ const optionsSchema = z
   });
 
 type Options = {
-  tag?: string;
+  tag: string;
   verbose: boolean;
   dryRun?: boolean;
 };
@@ -122,14 +122,12 @@ const publishAllPackages = async ({
   verbose,
   dryRun,
 }: {
-  tag?: string;
+  tag: string;
   verbose?: boolean;
   dryRun?: boolean;
 }) => {
   console.log(`📦 Publishing all packages...`);
-  const command = `yarn workspaces foreach --parallel --no-private --verbose npm publish --tolerate-republish ${
-    tag ? `--tag ${tag}` : ''
-  }`;
+  const command = `yarn workspaces foreach --parallel --no-private --verbose npm publish --tolerate-republish --tag ${tag}`;
   if (verbose) {
     console.log(`📦 Executing: ${command}`);
   }

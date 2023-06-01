@@ -1,0 +1,78 @@
+name: Publish canary release of PR
+run-name: 'Publish canary release of PR #${{ github.event.pull_request.number }} at ${{ github.event.pull_request.head.sha }}'
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+    branches:
+      - next-v2
+
+env:
+  PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
+  PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 1
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: write
+
+jobs:
+  release-canary:
+    name: Release canary version
+    runs-on: ubuntu-latest
+    environment: release
+    defaults:
+      run:
+        working-directory: scripts
+    steps:
+      - name: Checkout ${{ github.ref_name }}
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Cache dependencies
+        uses: actions/cache@v3
+        with:
+          path: |
+            ~/.yarn/berry/cache
+          key: yarn-v1-${{ hashFiles('scripts/yarn.lock') }}-${{ hashFiles('code/yarn.lock') }}
+          restore-keys: |
+            yarn-v1-${{ hashFiles('scripts/yarn.lock') }}-${{ hashFiles('code/yarn.lock') }}
+            yarn-v1-${{ hashFiles('scripts/yarn.lock') }}
+            yarn-v1
+
+      - name: Install dependencies
+        working-directory: .
+        run: yarn task --task=install --start-from=install
+
+      - name: Bump version
+        id: version
+        run: |
+          SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
+          yarn release:version --release-type prerelease --pre-id pr-${{ github.event.pull_request.number }}-$SHORT_SHA --verbose
+
+      - name: Publish
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: yarn release:publish --tag pr-${{ github.event.pull_request.number }} --verbose
+
+      - name: Create or update comment on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }}\
+            --repo "${{github.repository }}"\
+            --body "This PR has been published as [`v${{ steps.version.outputs.next-version }}`](https://www.npmjs.com/package/@storybook/cli/v/${{ steps.version.outputs.current-version }}) 🚀
+            "
+      # - name: Report job failure to Discord
+      #   if: failure()
+      #   env:
+      #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_MONITORING_URL }}
+      #   uses: Ilshidur/action-discord@master
+      #   with:
+      #     args: 'The GitHub Action for publishing version ${{ steps.version.outputs.current-version }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
