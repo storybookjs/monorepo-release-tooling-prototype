@@ -225,7 +225,7 @@ export const getChanges = async ({
     )} and ${chalk.green(to || 'HEAD')}`
   );
 
-  const fromCommit = await getFromCommit(from || version, verbose);
+  const fromCommit = await getFromCommit(from, verbose);
   const toCommit = await getToCommit(to, verbose);
 
   const commits = await getAllCommitsBetween({ from: fromCommit, to: toCommit, verbose });

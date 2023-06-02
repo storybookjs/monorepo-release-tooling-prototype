@@ -18,7 +18,7 @@ export const getVersionChangelog = async (args: { version?: string; verbose?: bo
 
   console.log(`📝 Getting changelog for version ${chalk.blue(version)}`);
 
-  const { changelogText } = await getChanges({ version, verbose: args.verbose });
+  const { changelogText } = await getChanges({ from: version, version, verbose: args.verbose });
 
   if (process.env.GITHUB_ACTIONS === 'true') {
     setOutput('changelog', changelogText);
