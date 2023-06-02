@@ -51,6 +51,8 @@ const LABELS_BY_IMPORTANCE = {
   unknown: '❔ Missing Label',
 } as const;
 
+const CHANGE_TITLES_TO_IGNORE = [/^bump version from.*/i, /^merge branch.*/i];
+
 export const mapToChangelist = ({
   changes,
   isRelease,
@@ -59,7 +61,15 @@ export const mapToChangelist = ({
   isRelease: boolean;
 }): string => {
   return changes
-    .filter((change) => !change.title.toLowerCase().startsWith('bump version from'))
+    .filter((change) => {
+      // eslint-disable-next-line no-restricted-syntax
+      for (const titleToIgnore of CHANGE_TITLES_TO_IGNORE) {
+        if (change.title.match(titleToIgnore)) {
+          return false;
+        }
+      }
+      return true;
+    })
     .map((change) => {
       const lines: string[] = [];
       if (!change.pull) {
