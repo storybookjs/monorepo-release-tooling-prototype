@@ -86,7 +86,7 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh release create \
-          ${{ steps.version.outputs.current-version }} \
+          v${{ steps.version.outputs.current-version }} \
             --repo "${{ github.repository }}" \
             --target ${{ github.ref_name }} \
             --title "v${{ steps.version.outputs.current-version }}" \
