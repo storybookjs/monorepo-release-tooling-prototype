@@ -57,7 +57,7 @@ export const run = async (
 
   const { changes } = await getChanges({
     version: currentVersion,
-    from,
+    from: from || currentVersion,
     to: 'HEAD',
     patchesOnly,
     verbose,
