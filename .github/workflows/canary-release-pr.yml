@@ -1,5 +1,5 @@
 name: Publish canary release of PR
-run-name: 'Publish canary release of PR #${{ github.event.pull_request.number }} at ${{ github.event.pull_request.head.sha }}'
+run-name: 'Canary release: PR #${{ github.event.pull_request.number }} at ${{ github.sha }}'
 
 on:
   pull_request:
@@ -22,7 +22,7 @@ jobs:
   release-canary:
     name: Release canary version
     runs-on: ubuntu-latest
-    environment: release
+    environment: canary-release
     defaults:
       run:
         working-directory: scripts
@@ -67,7 +67,7 @@ jobs:
         run: |
           gh pr comment ${{ github.event.pull_request.number }}\
             --repo "${{github.repository }}"\
-            --body "This PR has been published as [`v${{ steps.version.outputs.next-version }}`](https://www.npmjs.com/package/@storybook/cli/v/${{ steps.version.outputs.current-version }}) 🚀
+            --body "This PR has been published as [`v${{ steps.version.outputs.next-version }}`](https://www.npmjs.com/package/@storybook/cli/v/${{ steps.version.outputs.next-version }}) 🚀
             "
       # - name: Report job failure to Discord
       #   if: failure()
