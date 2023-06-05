@@ -67,7 +67,16 @@ jobs:
         run: |
           gh pr comment ${{ github.event.pull_request.number }}\
             --repo "${{github.repository }}"\
-            --body "This PR has been published as [\`v${{ steps.version.outputs.next-version }}\`](https://www.npmjs.com/package/@storybook/cli/v/${{ steps.version.outputs.next-version }}) 🚀"
+            --body "🚀 This pull request has been published as [\`v${{ steps.version.outputs.next-version }}\`](https://www.npmjs.com/package/@storybook/cli/v/${{ steps.version.outputs.next-version }})"
+
+      - name: Create failing comment on PR
+        if: failure()
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }}\
+            --repo "${{github.repository }}"\
+            --body "Failed to publish canary version of this pul request. See the failed workflow run at See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
       # - name: Report job failure to Discord
       #   if: failure()
