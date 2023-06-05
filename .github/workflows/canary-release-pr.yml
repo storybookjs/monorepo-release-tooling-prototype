@@ -56,18 +56,18 @@ jobs:
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
           yarn release:version --release-type prerelease --pre-id pr-${{ github.event.pull_request.number }}-$SHORT_SHA --verbose
 
-      - name: Create or update comment on PR
+      - name: Publish v${{ steps.version.outputs.next-version }}
+        env:
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: yarn release:publish --tag pr-${{ github.event.pull_request.number }} --verbose
+
+      - name: Create comment on PR
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr comment ${{ github.event.pull_request.number }}\
             --repo "${{github.repository }}"\
             --body "This PR has been published as [\`v${{ steps.version.outputs.next-version }}\`](https://www.npmjs.com/package/@storybook/cli/v/${{ steps.version.outputs.next-version }}) 🚀"
-
-      - name: Publish
-        env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: yarn release:publish --tag pr-${{ github.event.pull_request.number }} --verbose
 
       # - name: Report job failure to Discord
       #   if: failure()
