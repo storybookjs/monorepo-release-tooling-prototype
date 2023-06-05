@@ -78,7 +78,7 @@ jobs:
             --repo "${{github.repository }}"\
             --body "Failed to publish canary version of this pul request. See the failed workflow run at See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}"
 
-      # - name: Report job failure to Discord
+      # - name: Report failure to Discord
       #   if: failure()
       #   env:
       #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_MONITORING_URL }}
