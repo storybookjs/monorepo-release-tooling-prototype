@@ -58,7 +58,7 @@ jobs:
 
       - name: Publish
         env:
-          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN}}
+          YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: yarn release:publish --tag pr-${{ github.event.pull_request.number }} --verbose
 
       - name: Create or update comment on PR
