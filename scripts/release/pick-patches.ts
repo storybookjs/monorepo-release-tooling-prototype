@@ -121,10 +121,7 @@ export const run = async (_: unknown) => {
 
     try {
       await git.raw(['cherry-pick', '-m', '1', pr.mergeCommit]);
-      // We want to label only when merging the PR
-      // await labelPR(pr.id, labelToId);
       spinner.succeed(`Picked: ${formatPR(pr)}`);
-      // results.push({ ok: true, pr, error: null });
     } catch (err) {
       spinner.fail(`Failed to automatically pick: ${formatPR(pr)}`);
       const abort = ora(`Aborting cherry pick for merge commit: ${pr.mergeCommit}`).start();
