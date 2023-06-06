@@ -115,12 +115,12 @@ jobs:
         run: |
           gh pr edit \
             --repo "${{github.repository }}"\
-            --title "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
+            --title "Bump version on \`main\`: patch from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
             --body "${{ steps.description.outputs.description }}" \
           || \
           gh pr create \
             --repo "${{github.repository }}"\
-            --title "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
+            --title "Bump version on \`main\`: patch from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
             --base release/main-v2 \
             --head version-patch-from-${{ steps.version.outputs.current-version }} \
             --body "${{ steps.description.outputs.description }}"

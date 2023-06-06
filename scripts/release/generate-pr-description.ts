@@ -56,7 +56,7 @@ const LABELS_BY_IMPORTANCE = {
   unknown: '❔ Missing Label',
 } as const;
 
-const CHANGE_TITLES_TO_IGNORE = [/^bump version from.*/i, /^merge branch.*/i];
+const CHANGE_TITLES_TO_IGNORE = [/^bump version on.*/i, /^merge branch.*/i];
 
 export const mapToChangelist = ({
   changes,
