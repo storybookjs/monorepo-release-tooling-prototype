@@ -1,3 +1,6 @@
+name: Check release tasks
+run-name: 'Check tasks for "${{ github.event.pull_request.title }}" PR'
+
 on:
   pull_request:
     types:
