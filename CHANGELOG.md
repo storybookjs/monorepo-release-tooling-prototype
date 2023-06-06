@@ -1,3 +1,7 @@
+## 7.2.0
+
+- Legal: Change Licence - [#49](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/49), thanks [@JReinhold](https://github.com/JReinhold)!
+
 ## 7.0.7 (April 24, 2023)
 
 #### Bug Fixes

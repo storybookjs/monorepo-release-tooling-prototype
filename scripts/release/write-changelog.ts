@@ -16,7 +16,7 @@ program
     'write changelog based on merged PRs and commits. the <version> argument describes the changelog entry heading, but NOT which commits/PRs to include, must be a semver string'
   )
   .arguments('<version>')
-  .option('-P, --patches-only', 'Set to only consider PRs labeled with "patch" label')
+  .option('-P, --unpicked-patches', 'Set to only consider PRs labeled with "patch" label')
   .option(
     '-F, --from <tag>',
     'Which tag or commit to generate changelog from, eg. "7.0.7". Leave unspecified to select latest released tag in git history'
@@ -29,7 +29,7 @@ program
   .option('-V, --verbose', 'Enable verbose logging', false);
 
 const optionsSchema = z.object({
-  patchesOnly: z.boolean().optional(),
+  unpickedPatches: z.boolean().optional(),
   from: z.string().optional(),
   to: z.string().optional(),
   verbose: z.boolean().optional(),
@@ -37,7 +37,7 @@ const optionsSchema = z.object({
 });
 
 type Options = {
-  patchesOnly?: boolean;
+  unpickedPatches?: boolean;
   from?: string;
   to?: string;
   verbose: boolean;
@@ -84,7 +84,7 @@ export const run = async (args: unknown[], options: unknown) => {
   if (!validateOptions(args, options)) {
     return;
   }
-  const { from, to, patchesOnly, dryRun, verbose } = options;
+  const { from, to, unpickedPatches, dryRun, verbose } = options;
   const version = args[0] as string;
 
   console.log(
@@ -93,7 +93,7 @@ export const run = async (args: unknown[], options: unknown) => {
     )} and ${chalk.green(to || 'HEAD')}`
   );
 
-  const { changelogText } = await getChanges({ version, from, to, patchesOnly, verbose });
+  const { changelogText } = await getChanges({ version, from, to, unpickedPatches, verbose });
 
   if (dryRun) {
     console.log(`📝 Dry run, not writing file`);

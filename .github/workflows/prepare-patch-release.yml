@@ -1,29 +1,11 @@
-name: Prepare prerelease PR
-run-name: Prepare prerelease PR, triggered by ${{ github.triggering_actor }}
+name: Prepare patch PR
+run-name: Prepare patch PR, triggered by ${{ github.triggering_actor }}
 
 on:
   push:
     branches:
       - next-v2
   workflow_dispatch:
-    inputs:
-      release-type:
-        description: 'Which release type to use for bumping the version'
-        required: true
-        default: 'prerelease'
-        type: choice
-        options:
-          - prerelease
-          - prepatch
-          - preminor
-          - premajor
-          - patch
-          - minor
-          - major
-      pre-id:
-        description: For prerelease versions, what prerelease identifier to use, eg. 'alpha', 'beta', 'rc'
-        required: false
-        type: string
 
 env:
   PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: 1
@@ -34,20 +16,17 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  prepare-prerelease-pull-request:
-    name: Prepare prerelease pull request
+  prepare-patch-pull-request:
+    name: Prepare patch pull request
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: scripts
     steps:
-      - name: Checkout next-v2
+      - name: Checkout main-v2
         uses: actions/checkout@v3
         with:
-          ref: next-v2
-          # this needs to be set to a high enough number that it will contain the last version tag
-          # as of May 2023, the whole repo had 55K commits
-          fetch-depth: 10000
+          ref: main-v2
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -81,66 +60,86 @@ jobs:
           gh run cancel ${{ github.run_id }}
           gh run watch ${{ github.run_id }}
 
-      # tags are needed to get changes and changelog generation
-      - name: Fetch git tags
-        run: git fetch --tags origin
-
       - name: Check for unreleased changes
         id: unreleased-changes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:unreleased-changes-exists
+        run: yarn release:unreleased-changes-exists --unpicked-patches
 
-      - name: Cancel when no release necessary
-        if: steps.unreleased-changes.outputs.has-changes-to-release == 'false'
+      - name: Pick patches
+        id: pick-patches
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        # From https://stackoverflow.com/a/75809743
-        run: |
-          gh run cancel ${{ github.run_id }}
-          gh run watch ${{ github.run_id }}
+        run: yarn release:pick-patches
 
       - name: Bump version
         id: version
+        if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         run: |
-          yarn release:version --release-type ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('{0} {1}', '--pre-id', inputs.pre-id) || '' }} --verbose
+          yarn release:version --release-type patch --verbose
+
+      # We need the current version to set the branch name, even when not bumping the version
+      - name: Get current version
+        id: current-version
+        if: steps.unreleased-changes.outputs.has-changes-to-release == 'false'
+        run: |
+          yarn release:get-current-version --verbose
 
       - name: Write changelog
+        if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          yarn release:write-changelog ${{ steps.version.outputs.next-version }} --verbose
+          yarn release:write-changelog ${{ steps.version.outputs.next-version }} --unpicked-patches --verbose
 
-      - name: 'Commit changes to branch: version-prerelease-from-${{ steps.version.outputs.current-version }}'
+      - name: 'Commit changes to branch: version-patch-from-${{ steps.version.outputs.current-version }}'
         working-directory: .
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b version-prerelease-from-${{ steps.version.outputs.current-version }}
+          git checkout -b version-patch-from-${{ steps.version.outputs.current-version }}
           git add .
           git commit -m "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
-          git push --force origin version-prerelease-from-${{ steps.version.outputs.current-version }}
+          git push --force origin version-patch-from-${{ steps.version.outputs.current-version }}
 
       - name: Generate PR description
         id: description
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:generate-pr-description --current-version ${{ steps.version.outputs.current-version }} --next-version ${{ steps.version.outputs.next-version }} --verbose
+        run: yarn release:generate-pr-description --unpicked-patches --manual-cherry-picks='${{ steps.pick-patches.outputs.failed-cherry-picks }}' ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0}={1} {2}={3}', '--current-version', steps.version.outputs.current-version, '--next-version', steps.version.outputs.next-version) || '' }} --verbose
 
-      - name: Create or update pull request
+      - name: Create or update pull request with release
+        if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           gh pr edit \
             --repo "${{github.repository }}"\
-            --title "Bump version on \`next\`: ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('({0})', inputs.pre-id) }} from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
+            --title "Bump version on \`main\`: patch from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
             --body "${{ steps.description.outputs.description }}" \
           || \
           gh pr create \
             --repo "${{github.repository }}"\
-            --title "Bump version on \`next\`: ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('({0})', inputs.pre-id) }} from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
-            --base release/next-v2 \
-            --head version-prerelease-from-${{ steps.version.outputs.current-version }} \
+            --title "Bump version on \`main\`: patch from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
+            --base release/main-v2 \
+            --head version-patch-from-${{ steps.version.outputs.current-version }} \
+            --body "${{ steps.description.outputs.description }}"
+
+      - name: Create or update pull request without release
+        if: steps.unreleased-changes.outputs.has-changes-to-release == 'false'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr edit \
+            --repo "${{github.repository }}"\
+            --title "Merge patches to \`main\`" \
+            --body "${{ steps.description.outputs.description }}" \
+          || \
+          gh pr create \
+            --repo "${{github.repository }}"\
+            --title "Merge patches to \`main\`" \
+            --base release/main-v2 \
+            --head version-patch-from-${{ steps.current-version.outputs.current-version }} \
             --body "${{ steps.description.outputs.description }}"
 
       # - name: Report job failure to Discord
