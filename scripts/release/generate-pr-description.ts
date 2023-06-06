@@ -184,7 +184,7 @@ export const run = async (options: unknown) => {
 
   if (!nextVersion) {
     console.log(
-      '🚨 --next-version option not specificed, generating PR description assuming no release is needed'
+      '🚨 --next-version option not specified, generating PR description assuming no release is needed'
     );
   }
 

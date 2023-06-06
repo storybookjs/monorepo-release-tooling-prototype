@@ -1,10 +1,10 @@
 /* eslint-disable no-console */
 import chalk from 'chalk';
 import semver from 'semver';
-import type { DefaultLogFields, ListLogLine } from 'simple-git';
 import simpleGit from 'simple-git';
-import { getPullInfoFromCommit } from './get-github-info';
 import type { PullRequestInfo } from './get-github-info';
+import { getPullInfoFromCommit } from './get-github-info';
+import { getUnpickedPRs } from './get-unpicked-prs';
 
 const LABELS_FOR_CHANGELOG = ['BREAKING CHANGE', 'feature request', 'bug', 'maintenance'];
 
@@ -133,7 +133,7 @@ export const mapToChanges = ({
   patchesOnly,
   verbose,
 }: {
-  commits: readonly (DefaultLogFields & ListLogLine)[];
+  commits: readonly { hash: string; message?: string }[];
   pullRequests: PullRequestInfo[];
   patchesOnly?: boolean;
   verbose?: boolean;
@@ -228,7 +228,10 @@ export const getChanges = async ({
   const fromCommit = await getFromCommit(from, verbose);
   const toCommit = await getToCommit(to, verbose);
 
-  const commits = await getAllCommitsBetween({ from: fromCommit, to: toCommit, verbose });
+  const commits = patchesOnly
+    ? await Promise.all((await getUnpickedPRs('next-v2')).map((it) => ({ hash: it.mergeCommit })))
+    : await getAllCommitsBetween({ from: fromCommit, to: toCommit, verbose });
+
   const repo = await getRepo(verbose);
   const pullRequests = await getPullInfoFromCommits({ repo, commits, verbose }).catch((err) => {
     console.error(
