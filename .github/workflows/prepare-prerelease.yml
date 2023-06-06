@@ -139,9 +139,9 @@ jobs:
           gh pr create \
             --repo "${{github.repository }}"\
             --title "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
-            --body "${{ steps.description.outputs.description }}" \
             --base release/next-v2 \
-            --head version-prerelease-from-${{ steps.version.outputs.current-version }}
+            --head version-prerelease-from-${{ steps.version.outputs.current-version }} \
+            --body "${{ steps.description.outputs.description }}"
 
       # - name: Report job failure to Discord
       #   if: failure()
