@@ -1,3 +1,7 @@
+## 7.2.0-alpha.7
+
+- Legal: Change Licence - [#49](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/49), thanks [@JReinhold](https://github.com/JReinhold)!
+
 ## 7.2.0-alpha.6
 
 - Try3: Third feature, after release - [#41](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/41), thanks [@JReinhold](https://github.com/JReinhold)!
