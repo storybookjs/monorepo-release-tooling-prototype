@@ -73,7 +73,7 @@ jobs:
         id: pick-patches
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:pick-patches --verbose
+        run: yarn release:pick-patches
 
       - name: Bump version
         id: version
