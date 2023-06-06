@@ -64,9 +64,6 @@ export const run = async (
   });
 
   const changesToRelease = changes
-    .filter(({ labels }) =>
-      unpickedPatches ? labels.includes('patch') && !labels.includes('picked') : true
-    )
     .filter(({ labels }) => intersection(LABELS_TO_RELEASE, labels).length > 0);
 
   const hasChangesToRelease = changesToRelease.length > 0;
