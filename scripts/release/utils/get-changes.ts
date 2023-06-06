@@ -219,18 +219,18 @@ export const getChanges = async ({
   patchesOnly?: boolean;
   verbose?: boolean;
 }) => {
-  console.log(
-    `💬 Generating changelog for ${chalk.blue(version)} between ${chalk.green(
-      from || 'latest'
-    )} and ${chalk.green(to || 'HEAD')}`
-  );
+  console.log(`💬 Getting changes for ${chalk.blue(version)}`);
 
-  const fromCommit = await getFromCommit(from, verbose);
-  const toCommit = await getToCommit(to, verbose);
-
-  const commits = patchesOnly
-    ? await Promise.all((await getUnpickedPRs('next-v2')).map((it) => ({ hash: it.mergeCommit })))
-    : await getAllCommitsBetween({ from: fromCommit, to: toCommit, verbose });
+  let commits;
+  if (patchesOnly) {
+    commits = (await getUnpickedPRs('next-v2', verbose)).map((it) => ({ hash: it.mergeCommit }));
+  } else {
+    commits = await getAllCommitsBetween({
+      from: await getFromCommit(from, verbose),
+      to: await getToCommit(to, verbose),
+      verbose,
+    });
+  }
 
   const repo = await getRepo(verbose);
   const pullRequests = await getPullInfoFromCommits({ repo, commits, verbose }).catch((err) => {
