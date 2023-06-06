@@ -52,7 +52,7 @@ export const run = async (
   const currentVersion = await getCurrentVersion();
 
   console.log(
-    `📐 Checking if there are any unreleased changes between ${from || currentVersion} and HEAD...`
+    `📐 Checking if there are any unreleased changes...`
   );
 
   const { changes } = await getChanges({
