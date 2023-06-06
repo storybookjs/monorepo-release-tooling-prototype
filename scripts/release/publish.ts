@@ -172,75 +172,6 @@ const publishAllPackages = async ({
   console.log(`📦 Packages successfully published`);
 };
 
-/*
-const checkRegistryForPublishedPackages = async (currentVersion: string, verbose?: boolean) => {
-  const { stdout } = await execaCommand('yarn workspaces list --no-private --json', {
-    cwd: CODE_DIR_PATH,
-  });
-  // the output is a newline separated list of JSON objects, and not an actual array... 🤦
-  const arrayString = `[${stdout.split('\n').join(',')}]`;
-
-  let packages: {
-    location: string;
-    name: string;
-  }[];
-  try {
-    packages = JSON.parse(arrayString);
-  } catch (e) {
-    console.error(`Failed to parse JSON from "yarn workspaces list" output:`);
-    console.error(stdout);
-    throw e;
-  }
-  type PackagePublishResult = {
-    name: string;
-    isPublished: boolean;
-  };
-  const packagePublishResults = await Promise.allSettled(
-    packages.map(async ({ name }) => {
-      const isPublished = await isCurrentVersionPublished({
-        currentVersion,
-        verbose,
-        packageName: name,
-      });
-      return {
-        name,
-        isPublished,
-      };
-    })
-  );
-  const failedPackages = packagePublishResults.filter(
-    ({ status }) => status === 'rejected'
-  ) as PromiseRejectedResult[];
-  const successfulPackages = packagePublishResults.filter(
-    ({ status }) => status === 'fulfilled'
-  ) as PromiseFulfilledResult<PackagePublishResult>[];
-  const publishedPackages = successfulPackages.filter(({ value: { isPublished } }) => isPublished);
-  const unpublishedPackages = successfulPackages.filter(
-    ({ value: { isPublished } }) => !isPublished
-  );
-
-  if (failedPackages.length > 0) {
-    console.error(
-      `Some packages failed to check for publish status:
-      ${failedPackages.map(({ reason }) => reason).join('\n')}`
-    );
-  }
-  if (unpublishedPackages.length > 0) {
-    console.error(
-      `Some packages remain unpublished:
-      ${unpublishedPackages.map(({ value: { name } }) => name).join('\n')}`
-    );
-  }
-  if (publishedPackages.length !== packages.length) {
-    throw new Error(
-      `Not all packages were published. ${chalk.blue(publishedPackages.length)} / ${chalk.green(
-        packages.length
-      )} were published.}`
-    );
-  }
-};
- */
-
 export const run = async (options: unknown) => {
   if (!validateOptions(options)) {
     return;
@@ -262,7 +193,6 @@ export const run = async (options: unknown) => {
   await buildAllPackages();
   await publishAllPackages({ tag, verbose, dryRun });
 
-  // await checkRegistryForPublishedPackages(currentVersion, verbose);
   console.log(
     `✅ Published all packages with version ${chalk.green(currentVersion)}${
       tag ? ` at tag ${chalk.blue(tag)}` : ''
