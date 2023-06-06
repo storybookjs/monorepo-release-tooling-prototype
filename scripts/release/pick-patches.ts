@@ -6,6 +6,7 @@ import type { GraphQlQueryResponseData } from '@octokit/graphql';
 import { graphql } from '@octokit/graphql';
 import ora from 'ora';
 import { simpleGit } from 'simple-git';
+import { getUnpickedPRs } from './utils/get-unpicked-prs';
 
 program.name('pick-patches').description('Cherry pick patch PRs back to main');
 
@@ -34,58 +35,6 @@ const LABEL = {
   PICKED: 'picked',
   DOCUMENTATION: 'documentation',
 } as const;
-
-async function getUnpickedPRs(sourceBranch: string): Promise<Array<PR>> {
-  const result = await graphqlWithAuth<GraphQlQueryResponseData>(
-    `
-      query ($owner: String!, $repo: String!, $state: PullRequestState!, $order: IssueOrder!) {
-        repository(owner: $owner, name: $repo) {
-          pullRequests(states: [$state], labels: ["patch"], orderBy: $order, first: 50) {
-            nodes {
-              id
-              number
-              title
-              baseRefName
-              mergeCommit { 
-                abbreviatedOid
-              }
-              labels(first: 20) {
-                nodes {
-                  name
-                }
-              }
-            }
-          }
-        }
-      }
-    `,
-    {
-      owner: OWNER,
-      repo: REPO,
-      order: {
-        field: 'UPDATED_AT',
-        direction: 'ASC',
-      },
-      state: 'MERGED',
-    }
-  );
-
-  const {
-    pullRequests: { nodes },
-  } = result.repository;
-
-  const prs = nodes.map((node: any) => ({
-    number: node.number,
-    id: node.id,
-    branch: node.baseRefName,
-    title: node.title,
-    mergeCommit: node.mergeCommit.abbreviatedOid,
-    labels: node.labels.nodes.map((l: any) => l.name),
-  }));
-
-  const unpickedPRs = prs.filter((pr: any) => !pr.labels.includes(LABEL.PICKED));
-  return unpickedPRs.filter((pr: any) => pr.branch === sourceBranch);
-}
 
 function formatPR(pr: PR): string {
   return `https://github.com/${OWNER}/${REPO}/pull/${pr.number} "${pr.title}" ${chalk.yellow(

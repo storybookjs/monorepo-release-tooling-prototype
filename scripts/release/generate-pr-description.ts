@@ -19,20 +19,20 @@ program
     'Which version to generate changelog from, eg. "7.0.7". Defaults to the version at code/package.json'
   )
   .option('-N, --next-version <version>', 'Which version to generate changelog to, eg. "7.0.8"')
-  .option('-P, --patches-only', 'Set to only consider PRs labeled with "patch" label')
+  .option('-P, --unpicked-patches', 'Set to only consider PRs labeled with "patch" label')
   .option('-V, --verbose', 'Enable verbose logging', false);
 
 const optionsSchema = z.object({
   currentVersion: z.string().optional(),
   nextVersion: z.string().optional(),
-  patchesOnly: z.boolean().optional(),
+  unpickedPatches: z.boolean().optional(),
   verbose: z.boolean().optional(),
 });
 
 type Options = {
   currentVersion?: string;
   nextVersion?: string;
-  patchesOnly?: boolean;
+  unpickedPatches?: boolean;
   verbose: boolean;
 };
 
@@ -180,11 +180,11 @@ export const run = async (options: unknown) => {
   if (!validateOptions(options)) {
     return;
   }
-  const { nextVersion, patchesOnly, verbose } = options;
+  const { nextVersion, unpickedPatches, verbose } = options;
 
   if (!nextVersion) {
     console.log(
-      '🚨 --next-version option not specificed, generating PR description assuming no release is needed'
+      '🚨 --next-version option not specified, generating PR description assuming no release is needed'
     );
   }
 
@@ -200,7 +200,7 @@ export const run = async (options: unknown) => {
     version: nextVersion,
     from: `v${currentVersion}`,
     to: 'HEAD',
-    patchesOnly,
+    unpickedPatches,
     verbose,
   });
 
