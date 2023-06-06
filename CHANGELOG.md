@@ -1,3 +1,8 @@
+## 7.2.0
+
+- Fix: React Vite crashes on startup - [#30](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/30), thanks [@JReinhold](https://github.com/JReinhold)!
+- Legal: Change Licence - [#49](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/49), thanks [@JReinhold](https://github.com/JReinhold)!
+
 ## 7.0.7 (April 24, 2023)
 
 #### Bug Fixes
