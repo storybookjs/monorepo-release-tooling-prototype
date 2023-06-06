@@ -64,7 +64,6 @@ jobs:
           gh run watch ${{ github.run_id }}
 
       - name: Check for unreleased changes
-        # TODO: this check is wrong, the script doesn't support unpicked patches yet
         id: unreleased-changes
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -81,8 +80,14 @@ jobs:
         run: |
           yarn release:version --release-type patch --verbose
 
+      # We need the current version to set the branch name, even when not bumping the version
+      - name: Get current version
+        id: current-version
+        if: steps.unreleased-changes.outputs.has-changes-to-release == 'false'
+        run: |
+          yarn release:get-current-version --verbose
+
       - name: Write changelog
-        # TODO: this changelog is wrong, the script doesn't support unpicked patches yet
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -106,7 +111,6 @@ jobs:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn release:generate-pr-description ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0} {1} {3} {4}', '--current-version', steps.version.outputs.current-version, '--next-version', steps.version.outputs.next-version) || '' }} --verbose
 
-        # TODO: fix branch name, needs getCurrentVersion to be set always, which isn't the case when there are no changes to release
       - name: Create or update pull request with release
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         env:
@@ -139,7 +143,7 @@ jobs:
             --title "Merge patches to \`main\`" \
             --body "${{ steps.description.outputs.description }}" \
             --base release/main \
-            --head version-from-${{ steps.version.outputs.current-version }}
+            --head version-from-${{ steps.current-version.outputs.current-version }}
 
       # - name: Report job failure to Discord
       #   if: failure()
