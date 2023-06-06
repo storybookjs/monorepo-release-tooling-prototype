@@ -130,12 +130,12 @@ export type Change = PullRequestInfo;
 export const mapToChanges = ({
   commits,
   pullRequests,
-  patchesOnly,
+  unpickedPatches,
   verbose,
 }: {
   commits: readonly { hash: string; message?: string }[];
   pullRequests: PullRequestInfo[];
-  patchesOnly?: boolean;
+  unpickedPatches?: boolean;
   verbose?: boolean;
 }): Change[] => {
   if (pullRequests.length !== commits.length) {
@@ -160,8 +160,8 @@ export const mapToChanges = ({
     if (entry.pull && changes.findIndex((existing) => entry.pull === existing.pull) !== -1) {
       return;
     }
-    // filter out any entries that are not patches if patchesOnly is set. this will also filter out direct commits
-    if (patchesOnly && !entry.labels?.includes('patch')) {
+    // filter out any entries that are not patches if unpickedPatches is set. this will also filter out direct commits
+    if (unpickedPatches && !entry.labels?.includes('patch')) {
       return;
     }
     changes.push(entry);
@@ -210,27 +210,27 @@ export const getChanges = async ({
   version,
   from,
   to,
-  patchesOnly,
+  unpickedPatches,
   verbose,
 }: {
   version: string;
   from?: string;
   to?: string;
-  patchesOnly?: boolean;
+  unpickedPatches?: boolean;
   verbose?: boolean;
 }) => {
-  console.log(
-    `💬 Generating changelog for ${chalk.blue(version)} between ${chalk.green(
-      from || 'latest'
-    )} and ${chalk.green(to || 'HEAD')}`
-  );
+  console.log(`💬 Getting changes for ${chalk.blue(version)}`);
 
-  const fromCommit = await getFromCommit(from, verbose);
-  const toCommit = await getToCommit(to, verbose);
-
-  const commits = patchesOnly
-    ? await Promise.all((await getUnpickedPRs('next-v2')).map((it) => ({ hash: it.mergeCommit })))
-    : await getAllCommitsBetween({ from: fromCommit, to: toCommit, verbose });
+  let commits;
+  if (unpickedPatches) {
+    commits = (await getUnpickedPRs('next-v2', verbose)).map((it) => ({ hash: it.mergeCommit }));
+  } else {
+    commits = await getAllCommitsBetween({
+      from: await getFromCommit(from, verbose),
+      to: await getToCommit(to, verbose),
+      verbose,
+    });
+  }
 
   const repo = await getRepo(verbose);
   const pullRequests = await getPullInfoFromCommits({ repo, commits, verbose }).catch((err) => {
@@ -240,7 +240,7 @@ export const getChanges = async ({
     console.error(err);
     throw err;
   });
-  const changes = mapToChanges({ commits, pullRequests, patchesOnly, verbose });
+  const changes = mapToChanges({ commits, pullRequests, unpickedPatches, verbose });
   const changelogText = getChangelogText({
     changes,
     version,

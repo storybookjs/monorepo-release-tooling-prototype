@@ -12,7 +12,8 @@ export interface PR {
   mergeCommit: string;
 }
 
-export async function getUnpickedPRs(sourceBranch: string): Promise<Array<PR>> {
+export async function getUnpickedPRs(baseBranch: string, verbose?: boolean): Promise<Array<PR>> {
+  console.log(`💬 Getting unpicked patch pull requests...`);
   const result = await graphqlWithAuth<GraphQlQueryResponseData>(
     `
       query ($owner: String!, $repo: String!, $state: PullRequestState!, $order: IssueOrder!) {
@@ -60,6 +61,10 @@ export async function getUnpickedPRs(sourceBranch: string): Promise<Array<PR>> {
     labels: node.labels.nodes.map((l: any) => l.name),
   }));
 
-  const unpickedPRs = prs.filter((pr: any) => !pr.labels.includes('picked'));
-  return unpickedPRs.filter((pr: any) => pr.branch === sourceBranch);
+  const unpickedPRs = prs.filter((pr: any) => !pr.labels.includes('picked')).filter((pr: any) => pr.branch === baseBranch);
+  if(verbose){
+    console.log(`🔍 Found unpicked patch pull requests:
+  ${JSON.stringify(unpickedPRs, null, 2)}`);
+  }
+  return unpickedPRs;
 }
