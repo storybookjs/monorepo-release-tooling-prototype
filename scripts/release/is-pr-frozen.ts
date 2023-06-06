@@ -15,6 +15,7 @@ program
   .description(
     'returns true if the versioning pull request associated with the current branch has the "freeze" label'
   )
+  .option('-P, --patch', 'Look for patch PR instead of prerelease PR', false)
   .option('-V, --verbose', 'Enable verbose logging', false);
 
 const git = simpleGit();
@@ -47,10 +48,10 @@ const getRepo = async (verbose?: boolean): Promise<string> => {
 };
 
 export const run = async (options: unknown) => {
-  const { verbose } = options as { verbose?: boolean };
+  const { verbose, patch } = options as { verbose?: boolean; patch?: boolean };
 
   const version = await getCurrentVersion();
-  const branch = `version-from-${version}`;
+  const branch = `version-from-${patch ? 'patch' : 'prerelease'}-${version}`;
 
   console.log(`💬 Determining if pull request from branch '${chalk.blue(branch)}' is frozen`);
 

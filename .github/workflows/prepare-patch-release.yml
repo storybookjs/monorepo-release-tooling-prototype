@@ -92,15 +92,15 @@ jobs:
         run: |
           yarn release:write-changelog ${{ steps.version.outputs.next-version }} --unpicked-patches --verbose
 
-      - name: 'Commit changes to branch: version-from-${{ steps.version.outputs.current-version }}'
+      - name: 'Commit changes to branch: version-patch-from-${{ steps.version.outputs.current-version }}'
         working-directory: .
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b version-from-${{ steps.version.outputs.current-version }}
+          git checkout -b version-patch-from-${{ steps.version.outputs.current-version }}
           git add .
           git commit -m "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
-          git push --force origin version-from-${{ steps.version.outputs.current-version }}
+          git push --force origin version-patch-from-${{ steps.version.outputs.current-version }}
 
       - name: Generate PR description
         id: description
@@ -123,7 +123,7 @@ jobs:
             --title "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
             --body "${{ steps.description.outputs.description }}" \
             --base release/main \
-            --head version-from-${{ steps.version.outputs.current-version }}
+            --head version-patch-from-${{ steps.version.outputs.current-version }}
 
       - name: Create or update pull request without release
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'false'
@@ -140,7 +140,7 @@ jobs:
             --title "Merge patches to \`main\`" \
             --body "${{ steps.description.outputs.description }}" \
             --base release/main \
-            --head version-from-${{ steps.current-version.outputs.current-version }}
+            --head version-patch-from-${{ steps.current-version.outputs.current-version }}
 
       # - name: Report job failure to Discord
       #   if: failure()
