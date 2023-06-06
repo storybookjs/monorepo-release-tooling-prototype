@@ -50,7 +50,7 @@ jobs:
         working-directory: .
         run: yarn task --task=install --start-from=install
 
-      - name: Set version to ${{ steps.version.outputs.next-version }}}
+      - name: Set version
         id: version
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
