@@ -120,7 +120,7 @@ export const run = async (_: unknown) => {
     const spinner = ora(`Cherry picking #${pr.number}`).start();
 
     try {
-      await git.raw(['cherry-pick', '-m', '1', pr.mergeCommit]);
+      await git.raw(['cherry-pick', '-m', '1', '-x', pr.mergeCommit]);
       spinner.succeed(`Picked: ${formatPR(pr)}`);
     } catch (pickError) {
       spinner.fail(`Failed to automatically pick: ${formatPR(pr)}`);
@@ -136,7 +136,7 @@ export const run = async (_: unknown) => {
       failedCherryPicks.push(pr.mergeCommit);
       spinner.info(
         `This PR can be picked manually with: ${chalk.grey(
-          `git cherry-pick -m1 ${pr.mergeCommit}`
+          `git cherry-pick -m1 -x ${pr.mergeCommit}`
         )}`
       );
     }
