@@ -27,6 +27,9 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: main-v2
+          # this needs to be set to a high enough number that it will contain all the merge commits to cherry-pick
+          # as of May 2023, the whole repo had 55K commits
+          fetch-depth: 2000
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
