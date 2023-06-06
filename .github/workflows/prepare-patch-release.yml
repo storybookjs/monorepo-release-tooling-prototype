@@ -76,7 +76,10 @@ jobs:
         id: pick-patches
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:pick-patches
+        run: |
+          git config --global user.name 'github-actions[bot]'
+          git config --global user.email 'github-actions[bot]@users.noreply.github.com'
+          yarn release:pick-patches
 
       - name: Bump version
         id: version
