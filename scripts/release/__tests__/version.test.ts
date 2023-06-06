@@ -4,18 +4,18 @@ import path from 'path';
 import { run as version } from '../version';
 
 // eslint-disable-next-line jest/no-mocks-import
-jest.mock('fs-extra', () => require('../../code/__mocks__/fs-extra'));
+jest.mock('fs-extra', () => require('../../../code/__mocks__/fs-extra'));
 const fsExtra = require('fs-extra');
 
-jest.mock('../utils/exec');
-const { execaCommand } = require('../utils/exec');
+jest.mock('../../utils/exec');
+const { execaCommand } = require('../../utils/exec');
 
 beforeEach(() => {
   jest.resetAllMocks();
 });
 
 describe('Version', () => {
-  const CODE_DIR_PATH = path.join(__dirname, '..', '..', 'code');
+  const CODE_DIR_PATH = path.join(__dirname, '..', '..', '..', 'code');
   const CODE_PACKAGE_JSON_PATH = path.join(CODE_DIR_PATH, 'package.json');
   const MANAGER_API_VERSION_PATH = path.join(
     CODE_DIR_PATH,
@@ -116,31 +116,31 @@ describe('Version', () => {
 
   it.each([
     // prettier-ignore
-    { releaseType: 'major', currentVersion: '1.0.0', expectedVersion: '2.0.0' },
+    { releaseType: 'major', currentVersion: '1.1.1', expectedVersion: '2.0.0' },
     // prettier-ignore
-    { releaseType: 'minor', currentVersion: '1.0.0', expectedVersion: '1.1.0' },
+    { releaseType: 'minor', currentVersion: '1.1.1', expectedVersion: '1.2.0' },
     // prettier-ignore
-    { releaseType: 'patch', currentVersion: '1.0.0', expectedVersion: '1.0.1' },
+    { releaseType: 'patch', currentVersion: '1.1.1', expectedVersion: '1.1.2' },
     // prettier-ignore
-    { releaseType: 'premajor', preId: 'alpha', currentVersion: '1.0.0', expectedVersion: '2.0.0-alpha.0' },
+    { releaseType: 'premajor', preId: 'alpha', currentVersion: '1.1.1', expectedVersion: '2.0.0-alpha.0' },
     // prettier-ignore
-    { releaseType: 'preminor', preId: 'alpha', currentVersion: '1.0.0', expectedVersion: '1.1.0-alpha.0' },
+    { releaseType: 'preminor', preId: 'alpha', currentVersion: '1.1.1', expectedVersion: '1.2.0-alpha.0' },
     // prettier-ignore
-    { releaseType: 'prepatch', preId: 'alpha', currentVersion: '1.0.0', expectedVersion: '1.0.1-alpha.0' },
+    { releaseType: 'prepatch', preId: 'alpha', currentVersion: '1.1.1', expectedVersion: '1.1.2-alpha.0' },
     // prettier-ignore
-    { releaseType: 'prerelease', currentVersion: '1.0.0-alpha.5', expectedVersion: '1.0.0-alpha.6' },
+    { releaseType: 'prerelease', currentVersion: '1.1.1-alpha.5', expectedVersion: '1.1.1-alpha.6' },
     // prettier-ignore
-    { releaseType: 'prerelease', preId: 'alpha', currentVersion: '1.0.0-alpha.5', expectedVersion: '1.0.0-alpha.6' },
+    { releaseType: 'prerelease', preId: 'alpha', currentVersion: '1.1.1-alpha.5', expectedVersion: '1.1.1-alpha.6' },
     // prettier-ignore
-    { releaseType: 'prerelease', preId: 'beta', currentVersion: '1.0.0-alpha.10', expectedVersion: '1.0.0-beta.0' },
+    { releaseType: 'prerelease', preId: 'beta', currentVersion: '1.1.1-alpha.10', expectedVersion: '1.1.1-beta.0' },
     // prettier-ignore
-    { releaseType: 'major', currentVersion: '1.0.0-rc.10', expectedVersion: '1.0.0' },
+    { releaseType: 'major', currentVersion: '1.1.1-rc.10', expectedVersion: '2.0.0' },
     // prettier-ignore
-    { releaseType: 'minor', currentVersion: '1.0.0-rc.10', expectedVersion: '1.0.0' },
+    { releaseType: 'minor', currentVersion: '1.1.1-rc.10', expectedVersion: '1.2.0' },
     // prettier-ignore
-    { releaseType: 'patch', currentVersion: '1.0.0-rc.10', expectedVersion: '1.0.0' },
+    { releaseType: 'patch', currentVersion: '1.1.1-rc.10', expectedVersion: '1.1.1' },
     // prettier-ignore
-    { exact: '1.2.0-canary.99', currentVersion: '1.0.0-rc.10', expectedVersion: '1.2.0-canary.99' },
+    { exact: '4.2.0-canary.69', currentVersion: '1.1.1-rc.10', expectedVersion: '4.2.0-canary.69' },
   ])(
     'bump with type: "$releaseType", pre id "$preId" or exact "$exact", from: $currentVersion, to: $expectedVersion',
     async ({ releaseType, preId, exact, currentVersion, expectedVersion }) => {
@@ -159,10 +159,7 @@ describe('Version', () => {
       );
       expect(fsExtra.writeFile).toHaveBeenCalledWith(
         path.join(
-          __dirname,
-          '..',
-          '..',
-          'code',
+          CODE_DIR_PATH,
           '.yarn',
           'versions',
           'generated-by-versions-script.yml'
