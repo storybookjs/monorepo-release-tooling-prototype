@@ -111,15 +111,15 @@ jobs:
         run: |
           yarn release:write-changelog ${{ steps.version.outputs.next-version }} --verbose
 
-      - name: 'Commit changes to branch: version-from-${{ steps.version.outputs.current-version }}'
+      - name: 'Commit changes to branch: version-prerelease-from-${{ steps.version.outputs.current-version }}'
         working-directory: .
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b version-from-${{ steps.version.outputs.current-version }}
+          git checkout -b version-prerelease-from-${{ steps.version.outputs.current-version }}
           git add .
           git commit -m "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
-          git push --force origin version-from-${{ steps.version.outputs.current-version }}
+          git push --force origin version-prerelease-from-${{ steps.version.outputs.current-version }}
 
       - name: Generate PR description
         id: description
@@ -141,7 +141,7 @@ jobs:
             --title "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
             --body "${{ steps.description.outputs.description }}" \
             --base release/next-v2 \
-            --head version-from-${{ steps.version.outputs.current-version }}
+            --head version-prerelease-from-${{ steps.version.outputs.current-version }}
 
       # - name: Report job failure to Discord
       #   if: failure()
