@@ -1,5 +1,5 @@
 name: Publish
-run-name: Publish new version, triggered by ${{ github.triggering_actor }}
+run-name: Publish new version on ${{ github.ref_name }}, triggered by ${{ github.triggering_actor }}
 
 on:
   push:
