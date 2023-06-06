@@ -113,21 +113,21 @@ export const run = async (_: unknown) => {
   const failedCherryPicks: string[] = [];
 
   for (const pr of patchPRs) {
-    const spinner = ora(`Cherry picking #${pr.id}`).start();
+    const spinner = ora(`Cherry picking #${pr.number}`).start();
 
     try {
       await git.raw(['cherry-pick', '-m', '1', pr.mergeCommit]);
       spinner.succeed(`Picked: ${formatPR(pr)}`);
     } catch (pickError) {
       spinner.fail(`Failed to automatically pick: ${formatPR(pr)}`);
-      spinner.fail(pickError.message);
+      logger.error(pickError.message);
       const abort = ora(`Aborting cherry pick for merge commit: ${pr.mergeCommit}`).start();
       try {
         await git.raw(['cherry-pick', '--abort']);
         abort.stop();
       } catch (abortError) {
         abort.warn(`Failed to abort cherry pick (${pr.mergeCommit})`);
-        abort.warn(abortError.message)
+        logger.error(pickError.message);
       }
       failedCherryPicks.push(pr.mergeCommit);
       spinner.info(

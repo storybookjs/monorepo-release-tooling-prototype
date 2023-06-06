@@ -27,9 +27,6 @@ jobs:
         uses: actions/checkout@v3
         with:
           ref: main-v2
-          # this needs to be set to a high enough number that it will contain all the merge commits to cherry-pick
-          # as of May 2023, the whole repo had 55K commits
-          fetch-depth: 2000
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
@@ -68,6 +65,12 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn release:unreleased-changes-exists --unpicked-patches
+
+      - name: Fetch next branch
+        run:
+          # depth needs to be set to a high enough number that it will contain all the merge commits to cherry-pick
+          # as of May 2023, the whole repo had 55K commits
+          git fetch --depth=2000 origin next-v2
 
       - name: Pick patches
         id: pick-patches
