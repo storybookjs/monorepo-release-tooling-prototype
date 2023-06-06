@@ -35,15 +35,6 @@ jobs:
         with:
           node-version: '16'
 
-      - name: Create comment on PR
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh pr comment ${{ github.event.pull_request.number }}\
-            --repo "${{github.repository }}"\
-            --body "🚀 This pull request has been published as version \`${{ github.event.pull_request.number }}\` and with the tag \`pr-${{ github.event.pull_request.number }}\`.
-              [You can see it on the npm registry here](https://www.npmjs.com/package/@storybook/cli/v/${{ github.event.pull_request.number }})".
-
       - name: Cache dependencies
         uses: actions/cache@v3
         with:
@@ -59,7 +50,7 @@ jobs:
         working-directory: .
         run: yarn task --task=install --start-from=install
 
-      - name: Bump version
+      - name: Set version to ${{ steps.version.outputs.next-version }}}
         id: version
         run: |
           SHORT_SHA=$(git rev-parse --short ${{ github.sha }})
@@ -69,6 +60,15 @@ jobs:
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
         run: yarn release:publish --tag pr-${{ github.event.pull_request.number }} --verbose
+
+      - name: Create comment on PR
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh pr comment ${{ github.event.pull_request.number }}\
+            --repo "${{github.repository }}"\
+            --body "🚀 This pull request has been published as version \`${{ steps.version.outputs.next-version }}\` and with the tag \`pr-${{ github.event.pull_request.number }}\`.
+          [You can see it on the npm registry here](https://npmjs.com/package/@storybook/cli/v/${{ steps.version.outputs.next-version }})".
 
       - name: Create failing comment on PR
         if: failure()
