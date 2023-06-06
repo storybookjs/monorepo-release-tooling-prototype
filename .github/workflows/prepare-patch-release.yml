@@ -70,6 +70,7 @@ jobs:
         run: yarn release:unreleased-changes-exists
 
       - name: Pick patches
+        id: pick-patches
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn release:pick-patches --verbose
@@ -105,11 +106,10 @@ jobs:
           git push --force origin version-from-${{ steps.version.outputs.current-version }}
 
       - name: Generate PR description
-        # TODO: this description is wrong, the script doesn't support unpicked patches yet
         id: description
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:generate-pr-description ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0} {1} {3} {4}', '--current-version', steps.version.outputs.current-version, '--next-version', steps.version.outputs.next-version) || '' }} --verbose
+        run: yarn release:generate-pr-description --manual-cherry-picks="${{ steps.pick-patches.outputs.failed-cherry-picks }}" ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0} {1} {3} {4}', '--current-version', steps.version.outputs.current-version, '--next-version', steps.version.outputs.next-version) || '' }} --verbose
 
       - name: Create or update pull request with release
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
