@@ -7,6 +7,7 @@ import { graphql } from '@octokit/graphql';
 import ora from 'ora';
 import { simpleGit } from 'simple-git';
 import { getUnpickedPRs } from './utils/get-unpicked-prs';
+import { setOutput } from '@actions/core';
 
 program.name('pick-patches').description('Cherry pick patch PRs back to main');
 
@@ -113,6 +114,8 @@ export const run = async (_: unknown) => {
     spinner.warn('No PRs found.');
   }
 
+  const failedCherryPicks: string[] = [];
+
   for (const pr of patchPRs) {
     const spinner = ora(`Cherry picking #${pr.id}`).start();
 
@@ -131,13 +134,17 @@ export const run = async (_: unknown) => {
       } catch (error) {
         abort.warn(`Failed to abort cherry pick (${pr.mergeCommit})`);
       }
-
+      failedCherryPicks.push(pr.mergeCommit);
       spinner.info(
         `This PR can be picked manually with: ${chalk.grey(
           `git cherry-pick -m1 ${pr.mergeCommit}`
         )}`
       );
     }
+  }
+
+  if (process.env.GITHUB_ACTIONS === 'true') {
+      setOutput('failed-cherry-picks', JSON.stringify(failedCherryPicks));
   }
 };
 
