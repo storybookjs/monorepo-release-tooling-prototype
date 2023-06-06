@@ -18,18 +18,18 @@ program
     '-F, --from <version>',
     'Which version/tag/commit to go back and check changes from. Defaults to latest release tag'
   )
-  .option('-P, --patches-only', 'Set to only consider PRs labeled with "patch" label')
+  .option('-P, --unpicked-patches', 'Set to only consider PRs labeled with "patch" label')
   .option('-V, --verbose', 'Enable verbose logging', false);
 
 const optionsSchema = z.object({
   from: z.string().optional(),
-  patchesOnly: z.boolean().optional(),
+  unpickedPatches: z.boolean().optional(),
   verbose: z.boolean().optional(),
 });
 
 type Options = {
   from?: string;
-  patchesOnly?: boolean;
+  unpickedPatches?: boolean;
   verbose: boolean;
 };
 
@@ -47,7 +47,7 @@ export const run = async (
     // this will never return because the validator throws
     return { changesToRelease: [], hasChangesToRelease: false };
   }
-  const { from, patchesOnly, verbose } = options;
+  const { from, unpickedPatches, verbose } = options;
 
   const currentVersion = await getCurrentVersion();
 
@@ -59,13 +59,13 @@ export const run = async (
     version: currentVersion,
     from: from || currentVersion,
     to: 'HEAD',
-    patchesOnly,
+    unpickedPatches,
     verbose,
   });
 
   const changesToRelease = changes
     .filter(({ labels }) =>
-      patchesOnly ? labels.includes('patch') && !labels.includes('picked') : true
+      unpickedPatches ? labels.includes('patch') && !labels.includes('picked') : true
     )
     .filter(({ labels }) => intersection(LABELS_TO_RELEASE, labels).length > 0);
 
