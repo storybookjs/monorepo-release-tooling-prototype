@@ -93,6 +93,8 @@ jobs:
             --notes "${{ steps.changelog.outputs.changelog }}" \
             ${{ steps.is-prerelease.outputs.prerelease && '--prerelease' || '' }}
 
+      #TODO: label picked PRs if patch release
+
       - name: Merge ${{ github.ref_name }} into ${{ steps.target.outputs.target }}
         run: |
           git config --global user.name "github-actions[bot]"
