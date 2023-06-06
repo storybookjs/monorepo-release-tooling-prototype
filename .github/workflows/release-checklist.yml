@@ -1,0 +1,16 @@
+on:
+  pull_request:
+    types:
+      - opened
+      - edited
+    branches:
+      - 'release/**'
+      - 'next-v2'
+
+jobs:
+  task-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: chromaui/task-completed-checker-action@main
+        with:
+          repo-token: '${{ secrets.GITHUB_TOKEN }}'
