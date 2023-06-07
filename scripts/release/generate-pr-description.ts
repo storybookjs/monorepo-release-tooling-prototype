@@ -248,13 +248,15 @@ export const run = async (rawOptions: unknown) => {
     verbose,
   });
 
+  const hasCherryPicks = manualCherryPicks?.length > 0;
+
   const description = nextVersion
     ? generateReleaseDescription({
         currentVersion,
         nextVersion,
         changeList: mapToChangelist({ changes, isRelease: true }),
         changelogText,
-        ...(manualCherryPicks?.length > 0 && {
+        ...(hasCherryPicks && {
           manualCherryPicks: mapCherryPicksToTodo({
             commits: manualCherryPicks,
             changes,
@@ -264,11 +266,11 @@ export const run = async (rawOptions: unknown) => {
       })
     : generateNonReleaseDescription(
         mapToChangelist({ changes, isRelease: false }),
-        mapCherryPicksToTodo({
+        hasCherryPicks ? mapCherryPicksToTodo({
           commits: manualCherryPicks,
           changes,
           verbose,
-        })
+        }) : undefined
       );
 
   if (process.env.GITHUB_ACTIONS === 'true') {
