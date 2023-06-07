@@ -1,8 +1,5 @@
-import { graphql, GraphQlQueryResponseData } from '@octokit/graphql';
-
-const graphqlWithAuth = graphql.defaults({
-  headers: { authorization: `token ${process.env.GH_TOKEN}` },
-});
+import type { GraphQlQueryResponseData } from "@octokit/graphql";
+import { githubGraphQlClient } from "./github-client";
 
 export interface PR {
   number: number;
@@ -14,7 +11,7 @@ export interface PR {
 
 export async function getUnpickedPRs(baseBranch: string, verbose?: boolean): Promise<Array<PR>> {
   console.log(`💬 Getting unpicked patch pull requests...`);
-  const result = await graphqlWithAuth<GraphQlQueryResponseData>(
+  const result = await githubGraphQlClient<GraphQlQueryResponseData>(
     `
       query ($owner: String!, $repo: String!, $state: PullRequestState!, $order: IssueOrder!) {
         repository(owner: $owner, name: $repo) {
