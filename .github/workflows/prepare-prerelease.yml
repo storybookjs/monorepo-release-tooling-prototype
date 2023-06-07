@@ -101,7 +101,7 @@ jobs:
           gh run watch ${{ github.run_id }}
 
       - name: Bump version
-        id: version
+        id: bump-version
         run: |
           yarn release:version --release-type ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('{0} {1}', '--pre-id', inputs.pre-id) || '' }} --verbose
 
@@ -109,23 +109,23 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          yarn release:write-changelog ${{ steps.version.outputs.next-version }} --verbose
+          yarn release:write-changelog ${{ steps.bump-version.outputs.next-version }} --verbose
 
-      - name: 'Commit changes to branch: version-prerelease-from-${{ steps.version.outputs.current-version }}'
+      - name: 'Commit changes to branch: version-prerelease-from-${{ steps.bump-version.outputs.current-version }}'
         working-directory: .
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b version-prerelease-from-${{ steps.version.outputs.current-version }}
+          git checkout -b version-prerelease-from-${{ steps.bump-version.outputs.current-version }}
           git add .
-          git commit -m "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
-          git push --force origin version-prerelease-from-${{ steps.version.outputs.current-version }}
+          git commit -m "Bump version from ${{ steps.bump-version.outputs.current-version }} to ${{ steps.bump-version.outputs.next-version }}" || true
+          git push --force origin version-prerelease-from-${{ steps.bump-version.outputs.current-version }}
 
       - name: Generate PR description
         id: description
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:generate-pr-description --current-version ${{ steps.version.outputs.current-version }} --next-version ${{ steps.version.outputs.next-version }} --verbose
+        run: yarn release:generate-pr-description --current-version ${{ steps.bump-version.outputs.current-version }} --next-version ${{ steps.bump-version.outputs.next-version }} --verbose
 
       - name: Create or update pull request
         env:
@@ -133,14 +133,14 @@ jobs:
         run: |
           gh pr edit \
             --repo "${{github.repository }}"\
-            --title "Bump version on \`next\`: ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('({0})', inputs.pre-id) }} from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
+            --title "Bump version on \`next\`: ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('({0})', inputs.pre-id) }} from ${{ steps.bump-version.outputs.current-version }} to ${{ steps.bump-version.outputs.next-version }}" \
             --body "${{ steps.description.outputs.description }}" \
           || \
           gh pr create \
             --repo "${{github.repository }}"\
-            --title "Bump version on \`next\`: ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('({0})', inputs.pre-id) }} from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
+            --title "Bump version on \`next\`: ${{ inputs.release-type || 'prerelease' }} ${{ inputs.pre-id && format('({0})', inputs.pre-id) }} from ${{ steps.bump-version.outputs.current-version }} to ${{ steps.bump-version.outputs.next-version }}" \
             --base release/next-v2 \
-            --head version-prerelease-from-${{ steps.version.outputs.current-version }} \
+            --head version-prerelease-from-${{ steps.bump-version.outputs.current-version }} \
             --body "${{ steps.description.outputs.description }}"
 
       # - name: Report job failure to Discord
@@ -149,4 +149,4 @@ jobs:
       #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_MONITORING_URL }}
       #   uses: Ilshidur/action-discord@master
       #   with:
-      #     args: 'The GitHub Action for preparing the release pull request bumping from v${{ steps.version.outputs.current-version }} to v${{ steps.version.outputs.next-version }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+      #     args: 'The GitHub Action for preparing the release pull request bumping from v${{ steps.bump-version.outputs.current-version }} to v${{ steps.bump-version.outputs.next-version }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'

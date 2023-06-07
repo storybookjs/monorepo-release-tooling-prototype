@@ -82,7 +82,7 @@ jobs:
           yarn release:pick-patches
 
       - name: Bump version
-        id: version
+        id: bump-version
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         run: |
           yarn release:version --release-type patch --verbose
@@ -94,28 +94,34 @@ jobs:
         run: |
           yarn release:get-current-version --verbose
 
+      - name: Set version output
+        id: versions
+        run: |
+          echo "current=${{ steps.bump-version.outputs.current-version || steps.current-version.outputs.current-version }}" >> "$GITHUB_OUTPUT"
+          echo "next=${{ steps.bump-version.outputs.next-version || steps.current-version.outputs.current-version }}" >> "$GITHUB_OUTPUT"
+
       - name: Write changelog
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          yarn release:write-changelog ${{ steps.version.outputs.next-version }} --unpicked-patches --verbose
+          yarn release:write-changelog ${{ steps.versions.outputs.next }} --unpicked-patches --verbose
 
-      - name: 'Commit changes to branch: version-patch-from-${{ steps.version.outputs.current-version }}'
+      - name: 'Commit changes to branch: version-patch-from-${{ steps.versions.outputs.current }}'
         working-directory: .
         run: |
           git config --global user.name 'github-actions[bot]'
           git config --global user.email 'github-actions[bot]@users.noreply.github.com'
-          git checkout -b version-patch-from-${{ steps.version.outputs.current-version }}
+          git checkout -b version-patch-from-${{ steps.versions.outputs.current }}
           git add .
-          git commit -m "Bump version from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" || true
-          git push --force origin version-patch-from-${{ steps.version.outputs.current-version }}
+          git commit -m "Bump version from ${{ steps.versions.outputs.current }} to ${{ steps.versions.outputs.next }}" || true
+          git push --force origin version-patch-from-${{ steps.versions.outputs.current }}
 
       - name: Generate PR description
         id: description
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:generate-pr-description --unpicked-patches --manual-cherry-picks='${{ steps.pick-patches.outputs.failed-cherry-picks }}' ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0}={1} {2}={3}', '--current-version', steps.version.outputs.current-version, '--next-version', steps.version.outputs.next-version) || '' }} --verbose
+        run: yarn release:generate-pr-description --unpicked-patches --manual-cherry-picks='${{ steps.pick-patches.outputs.failed-cherry-picks }}' ${{ steps.unreleased-changes.outputs.has-changes-to-release == 'true' && format('{0}={1} {2}={3}', '--current-version', steps.versions.outputs.current, '--next-version', steps.versions.outputs.next) || '' }} --verbose
 
       - name: Create or update pull request with release
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'true'
@@ -124,14 +130,14 @@ jobs:
         run: |
           gh pr edit \
             --repo "${{github.repository }}"\
-            --title "Bump version on \`main\`: patch from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
+            --title "Bump version on \`main\`: patch from ${{ steps.versions.outputs.current }} to ${{ steps.versions.outputs.next }}" \
             --body "${{ steps.description.outputs.description }}" \
           || \
           gh pr create \
             --repo "${{github.repository }}"\
-            --title "Bump version on \`main\`: patch from ${{ steps.version.outputs.current-version }} to ${{ steps.version.outputs.next-version }}" \
+            --title "Bump version on \`main\`: patch from ${{ steps.versions.outputs.current }} to ${{ steps.versions.outputs.next }}" \
             --base release/main-v2 \
-            --head version-patch-from-${{ steps.version.outputs.current-version }} \
+            --head version-patch-from-${{ steps.versions.outputs.current }} \
             --body "${{ steps.description.outputs.description }}"
 
       - name: Create or update pull request without release
@@ -148,7 +154,7 @@ jobs:
             --repo "${{github.repository }}"\
             --title "Merge patches to \`main\`" \
             --base release/main-v2 \
-            --head version-patch-from-${{ steps.current-version.outputs.current-version }} \
+            --head version-patch-from-${{ steps.versions.outputs.current }} \
             --body "${{ steps.description.outputs.description }}"
 
       # - name: Report job failure to Discord
@@ -157,4 +163,4 @@ jobs:
       #     DISCORD_WEBHOOK: ${{ secrets.DISCORD_MONITORING_URL }}
       #   uses: Ilshidur/action-discord@master
       #   with:
-      #     args: 'The GitHub Action for preparing the release pull request bumping from v${{ steps.version.outputs.current-version }} to v${{ steps.version.outputs.next-version }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
+      #     args: 'The GitHub Action for preparing the release pull request bumping from v${{ steps.versions.outputs.current }} to v${{ steps.versions.outputs.next }} (triggered by ${{ github.triggering_actor }}) failed! See run at: https://github.com/${{ github.repository }}/actions/runs/${{ github.run_id }}'
