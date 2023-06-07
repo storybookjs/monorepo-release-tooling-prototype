@@ -105,7 +105,7 @@ export const mapToChangelist = ({
     .join('\n');
 };
 
-const mapCherryPicksToTodo = ({
+export const mapCherryPicksToTodo = ({
   commits,
   changes,
   verbose,
@@ -180,7 +180,7 @@ export const generateReleaseDescription = ({
   
   When everything above is done:
   - [ ] Merge this PR
-  - [ ] [Approve the publish workflow run](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/publish.yml)
+  - [ ] [Follow the publish workflow run and see it finishes succesfully](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/publish.yml)
   
   ---
   

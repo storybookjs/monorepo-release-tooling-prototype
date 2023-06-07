@@ -2,87 +2,88 @@ import {
   generateReleaseDescription,
   generateNonReleaseDescription,
   mapToChangelist,
+  mapCherryPicksToTodo,
 } from '../generate-pr-description';
 import type { Change } from '../utils/get-changes';
 
 describe('Generate PR Description', () => {
+  const changes: Change[] = [
+    {
+      user: 'JReinhold',
+      title: 'Some PR title for a bug',
+      labels: ['bug', 'build', 'other label', 'patch'],
+      commit: 'abc123',
+      pull: '42',
+      links: {
+        commit: '[abc123](https://github.com/storybookjs/storybook/commit/abc123)',
+        pull: '[#42](https://github.com/storybookjs/storybook/pull/42)',
+        user: '[@JReinhold](https://github.com/JReinhold)',
+      },
+    },
+    {
+      // this Bump version commit should be ignored
+      user: 'github-actions[bot]',
+      pull: null,
+      commit: '012b58140c3606efeacbe99c0c410624b0a1ed1f',
+      title: 'Bump version on `next`: preminor (alpha) from 7.2.0 to 7.3.0-alpha.0',
+      labels: null,
+      links: {
+        commit:
+          '[`012b58140c3606efeacbe99c0c410624b0a1ed1f`](https://github.com/storybookjs/monorepo-release-tooling-prototype/commit/012b58140c3606efeacbe99c0c410624b0a1ed1f)',
+        pull: null,
+        user: '[@github-actions[bot]](https://github.com/github-actions%5Bbot%5D)',
+      },
+    },
+    {
+      user: 'shilman',
+      title: 'Some title for a "direct commit"',
+      labels: null,
+      commit: '22bb11',
+      pull: null,
+      links: {
+        commit: '[22bb11](https://github.com/storybookjs/storybook/commit/22bb11)',
+        pull: null,
+        user: '[@shilman](https://github.com/shilman)',
+      },
+    },
+    {
+      user: 'shilman',
+      title: 'Another PR `title` for docs',
+      labels: ['another label', 'documentation', 'patch'],
+      commit: 'ddd222',
+      pull: '11',
+      links: {
+        commit: '[ddd222](https://github.com/storybookjs/storybook/commit/ddd222)',
+        pull: '[#11](https://github.com/storybookjs/storybook/pull/11)',
+        user: '[@shilman](https://github.com/shilman)',
+      },
+    },
+    {
+      user: 'JReinhold',
+      title: "Some PR title for a 'new' feature",
+      labels: ['feature request', 'other label'],
+      commit: 'wow1337',
+      pull: '48',
+      links: {
+        commit: '[wow1337](https://github.com/storybookjs/storybook/commit/wow1337)',
+        pull: '[#48](https://github.com/storybookjs/storybook/pull/48)',
+        user: '[@JReinhold](https://github.com/JReinhold)',
+      },
+    },
+    {
+      user: 'JReinhold',
+      title: 'Some PR title with a missing label',
+      labels: ['incorrect label', 'other label'],
+      commit: 'bad999',
+      pull: '77',
+      links: {
+        commit: '[bad999](https://github.com/storybookjs/storybook/commit/bad999)',
+        pull: '[#77](https://github.com/storybookjs/storybook/pull/77)',
+        user: '[@JReinhold](https://github.com/JReinhold)',
+      },
+    },
+  ];
   describe('mapToChangelist', () => {
-    const changes: Change[] = [
-      {
-        user: 'JReinhold',
-        title: 'Some PR title for a bug',
-        labels: ['bug', 'build', 'other label'],
-        commit: 'abc123',
-        pull: '42',
-        links: {
-          commit: '[abc123](https://github.com/storybookjs/storybook/commit/abc123)',
-          pull: '[#42](https://github.com/storybookjs/storybook/pull/42)',
-          user: '[@JReinhold](https://github.com/JReinhold)',
-        },
-      },
-      {
-        // this Bump version commit should be ignored
-        user: 'github-actions[bot]',
-        pull: null,
-        commit: '012b58140c3606efeacbe99c0c410624b0a1ed1f',
-        title: 'Bump version from 7.2.0-alpha.3 to 7.2.0-alpha.4',
-        labels: null,
-        links: {
-          commit:
-            '[`012b58140c3606efeacbe99c0c410624b0a1ed1f`](https://github.com/storybookjs/monorepo-release-tooling-prototype/commit/012b58140c3606efeacbe99c0c410624b0a1ed1f)',
-          pull: null,
-          user: '[@github-actions[bot]](https://github.com/github-actions%5Bbot%5D)',
-        },
-      },
-      {
-        user: 'shilman',
-        title: 'Some title for a "direct commit"',
-        labels: null,
-        commit: '22bb11',
-        pull: null,
-        links: {
-          commit: '[22bb11](https://github.com/storybookjs/storybook/commit/22bb11)',
-          pull: null,
-          user: '[@shilman](https://github.com/shilman)',
-        },
-      },
-      {
-        user: 'shilman',
-        title: 'Another PR `title` for docs',
-        labels: ['another label', 'documentation'],
-        commit: 'ddd222',
-        pull: '11',
-        links: {
-          commit: '[ddd222](https://github.com/storybookjs/storybook/commit/ddd222)',
-          pull: '[#11](https://github.com/storybookjs/storybook/pull/11)',
-          user: '[@shilman](https://github.com/shilman)',
-        },
-      },
-      {
-        user: 'JReinhold',
-        title: "Some PR title for a 'new' feature",
-        labels: ['feature request', 'other label'],
-        commit: 'wow1337',
-        pull: '48',
-        links: {
-          commit: '[wow1337](https://github.com/storybookjs/storybook/commit/wow1337)',
-          pull: '[#48](https://github.com/storybookjs/storybook/pull/48)',
-          user: '[@JReinhold](https://github.com/JReinhold)',
-        },
-      },
-      {
-        user: 'JReinhold',
-        title: 'Some PR title with a missing label',
-        labels: ['incorrect label', 'other label'],
-        commit: 'bad999',
-        pull: '77',
-        links: {
-          commit: '[bad999](https://github.com/storybookjs/storybook/commit/bad999)',
-          pull: '[#77](https://github.com/storybookjs/storybook/pull/77)',
-          user: '[@JReinhold](https://github.com/JReinhold)',
-        },
-      },
-    ];
     it('should return a correct string for releases', () => {
       expect(mapToChangelist({ changes, isRelease: true })).toMatchInlineSnapshot(`
         "- **🐛 Bug**: Some PR title for a bug [#42](https://github.com/storybookjs/storybook/pull/42)
@@ -112,6 +113,19 @@ describe('Generate PR Description', () => {
         - **📝 Documentation**: Another PR \`title\` for docs [#11](https://github.com/storybookjs/storybook/pull/11)
         - **✨ Feature Request**: Some PR title for a 'new' feature [#48](https://github.com/storybookjs/storybook/pull/48)
         - **❔ Missing Label**: Some PR title with a missing label [#77](https://github.com/storybookjs/storybook/pull/77)"
+      `);
+    });
+  });
+
+  describe('mapCherryPicksToTodo', () => {
+    it('should return a correct string for releases', () => {
+      expect(mapCherryPicksToTodo({ changes, commits: ['abc123'] })).toMatchInlineSnapshot(`
+        "## 🍒 Manual cherry picking needed!
+
+        The following pull requests could not be cherry-picked automatically because it resulted in merge conflicts.
+        For each pull request below, you need to either manually cherry pick it, or discard it by removing the "patch" label from the PR and re-generate this PR.
+
+        - [ ] [#42](https://github.com/storybookjs/storybook/pull/42): \`git cherry-pick -m1 -x abc123\`"
       `);
     });
   });
@@ -190,11 +204,13 @@ describe('Generate PR Description', () => {
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
 
+
+
         If you\\'ve made any changes doing the above QA (change PR titles, revert PRs), manually trigger a re-generation of this PR with [this workflow](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/prepare-prerelease.yml) and wait for it to finish. It will wipe your progress in this to do, which is expected.
 
         When everything above is done:
         - [ ] Merge this PR
-        - [ ] [Approve the publish workflow run](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/publish.yml)
+        - [ ] [Follow the publish workflow run and see it finishes succesfully](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/publish.yml)
 
         ---
 
@@ -233,6 +249,8 @@ describe('Generate PR Description', () => {
         	- [ ] The change is appropriate for the version bump
         	- [ ] The PR is labeled correctly
         	- [ ] The PR title is correct
+
+
 
         If you\\'ve made any changes (change PR titles, revert PRs), manually trigger a re-generation of this PR with [this workflow](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/prepare-prerelease.yml) and wait for it to finish.
 
