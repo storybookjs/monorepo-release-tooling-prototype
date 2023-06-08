@@ -1,6 +1,6 @@
 {
   "name": "@junk-temporary-prototypes/addon-highlight",
-  "version": "7.2.0",
+  "version": "7.2.1-0",
   "description": "Highlight DOM nodes within your stories",
   "keywords": [
     "storybook-addons",
@@ -61,8 +61,8 @@
     "prep": "../../../scripts/prepare/bundle.ts"
   },
   "dependencies": {
-    "@junk-temporary-prototypes/core-events": "7.2.0",
-    "@junk-temporary-prototypes/preview-api": "7.2.0",
+    "@junk-temporary-prototypes/core-events": "7.2.1-0",
+    "@junk-temporary-prototypes/preview-api": "7.2.1-0",
     "@storybook/global": "^5.0.0"
   },
   "devDependencies": {
@@ -86,5 +86,6 @@
       "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/42671/162045505-9d06fe2e-8fcb-4c41-9486-e0553bce10cc.png"
-  }
+  },
+  "stableVersion": "7.2.0"
 }
