@@ -69,13 +69,13 @@ jobs:
         if: steps.publish-needed.outputs.published == 'false'
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: yarn release:publish --tag ${{ steps.is-prerelease.outputs.prerelease && 'next' || 'latest' }} --verbose
+        run: yarn release:publish --tag ${{ steps.is-prerelease.outputs.prerelease == 'true' && 'next' || 'latest' }} --verbose
 
       - name: Get target branch
         id: target
         run: echo "target=${{ github.ref_name == 'release/next-v2' && 'next-v2' || 'main-v2' }}" >> $GITHUB_OUTPUT
 
-      - name: Get changelog for ${{ steps.version.outputs.current-version }}}
+      - name: Get changelog for ${{ steps.version.outputs.current-version }}
         if: steps.publish-needed.outputs.published == 'false'
         id: changelog
         run: yarn release:get-changelog-from-file ${{ steps.version.outputs.current-version }}
@@ -91,7 +91,7 @@ jobs:
             --target ${{ github.ref_name }} \
             --title "v${{ steps.version.outputs.current-version }}" \
             --notes "${{ steps.changelog.outputs.changelog }}" \
-            ${{ steps.is-prerelease.outputs.prerelease && '--prerelease' || '' }}
+            ${{ steps.is-prerelease.outputs.prerelease == 'true' && '--prerelease' || '' }}
 
       #TODO: label picked PRs if patch release
 
