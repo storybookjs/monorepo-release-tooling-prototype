@@ -81,6 +81,8 @@ jobs:
         run: yarn release:get-changelog-from-file ${{ steps.version.outputs.current-version }}
 
       - name: Label patch PRs as picked
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: yarn release:label-patches
 
       - name: Create GitHub Release
