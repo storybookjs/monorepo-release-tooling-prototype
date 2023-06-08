@@ -1,3 +1,7 @@
+## 7.2.5
+
+- Legal: Fix license issues - [#66](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/66), thanks [@kasperpeulen](https://github.com/kasperpeulen)!
+
 ## 7.2.4
 
 - Legal: License for doctors - [#64](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/64), thanks [@JReinhold](https://github.com/JReinhold)!
