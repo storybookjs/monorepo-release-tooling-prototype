@@ -7,17 +7,11 @@ import * as github_ from './utils/github-client';
 jest.mock('uuid');
 jest.mock('./utils/get-github-info');
 jest.mock('./utils/github-client');
-jest.mock('./utils/git-client', () => ({
-  getLatestTag: jest.fn(),
-  git: {
-    log: jest.fn(),
-    getRemotes: jest.fn(),
-  },
-}));
+jest.mock('./utils/git-client', () => jest.requireActual('jest-mock-extended').mockDeep());
 
-const gitClient = gitClient_ as jest.MockedObjectDeep<typeof import('./utils/git-client')>;
-const github = github_ as jest.MockedObjectDeep<typeof import('./utils/github-client')>;
-const githubInfo = githubInfo_ as jest.MockedObjectDeep<typeof import('./utils/get-github-info')>;
+const gitClient = jest.mocked(gitClient_);
+const github = jest.mocked(github_);
+const githubInfo = jest.mocked(githubInfo_);
 
 const remoteMock = [
   {
@@ -58,7 +52,7 @@ const gitLogMock: LogResult = {
 
 const pullInfoMock = {
   user: 'JReinhold',
-  id: 'PR_kwDOJcZEJ85SWPp7',
+  id: 'pr_id',
   pull: 55,
   commit: '930b47f011f750c44a1782267d698ccdd3c04da3',
   title: 'Legal: Fix license',
@@ -71,24 +65,26 @@ const pullInfoMock = {
   },
 };
 
-test('It should fail early when no GH_TOKEN is set', async () => {
-  await expect(run({})).rejects.toThrowErrorMatchingInlineSnapshot(
-    `"GH_TOKEN environment variable must be set, exiting."`
-  );
-});
-
-test('it labels the PR', async () => {
-  process.env.GH_TOKEN = 'MY_SECRET';
-  let stderr = '';
-  jest.spyOn(process.stderr, 'write').mockImplementation((message) => {
-    stderr += `${message}`;
-    return true;
-  });
+beforeAll(() => {
+  // mock IO
   gitClient.getLatestTag.mockResolvedValueOnce('v7.2.1');
   gitClient.git.log.mockResolvedValueOnce(gitLogMock);
   gitClient.git.getRemotes.mockResolvedValue(remoteMock);
   githubInfo.getPullInfoFromCommit.mockResolvedValueOnce(pullInfoMock);
   github.getLabelIds.mockResolvedValueOnce({ picked: 'pick-id' });
+});
+
+test('it should fail early when no GH_TOKEN is set', async () => {
+  await expect(run({})).rejects.toThrowErrorMatchingInlineSnapshot(
+    `"GH_TOKEN environment variable must be set, exiting."`
+  );
+});
+
+test('it should label the PR associated with cheery picks in the current branch', async () => {
+  process.env.GH_TOKEN = 'MY_SECRET';
+
+  const writeStderr = jest.spyOn(process.stderr, 'write').mockImplementation();
+
   await run({});
   expect(github.githubGraphQlClient.mock.calls).toMatchInlineSnapshot(`
     [
@@ -106,21 +102,28 @@ test('it labels the PR', async () => {
             "labelIds": [
               "pick-id",
             ],
-            "labelableId": "PR_kwDOJcZEJ85SWPp7",
+            "labelableId": "pr_id",
           },
         },
       ],
     ]
   `);
-  expect(stderr).toMatchInlineSnapshot(`
-    "- Looking for latest tag
-    [32m✔[39m Found latest tag: v7.2.1
-    - Looking at cherry pick commits since v7.2.1
-    [32m✔[39m Found the following picks 🍒:
+  expect(writeStderr.mock.calls.map(([text]) => text)).toMatchInlineSnapshot(`
+    [
+      "- Looking for latest tag
+    ",
+      "[32m✔[39m Found latest tag: v7.2.1
+    ",
+      "- Looking at cherry pick commits since v7.2.1
+    ",
+      "[32m✔[39m Found the following picks 🍒:
      Commit: 930b47f011f750c44a1782267d698ccdd3c04da3
      PR: [#55](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/55)
-    - Labeling the PRs with the picked label...
-    [32m✔[39m Successfully labeled all PRs with the picked label.
-    "
+    ",
+      "- Labeling the PRs with the picked label...
+    ",
+      "[32m✔[39m Successfully labeled all PRs with the picked label.
+    ",
+    ]
   `);
 });
