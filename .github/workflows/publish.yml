@@ -80,6 +80,11 @@ jobs:
         id: changelog
         run: yarn release:get-changelog-from-file ${{ steps.version.outputs.current-version }}
 
+      - name: Label patch PRs as picked
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn release:label-patches
+
       - name: Create GitHub Release
         if: steps.publish-needed.outputs.published == 'false'
         env:
@@ -92,8 +97,6 @@ jobs:
             --title "v${{ steps.version.outputs.current-version }}" \
             --notes "${{ steps.changelog.outputs.changelog }}" \
             ${{ steps.is-prerelease.outputs.prerelease == 'true' && '--prerelease' || '' }}
-
-      #TODO: label picked PRs if patch release
 
       - name: Merge ${{ github.ref_name }} into ${{ steps.target.outputs.target }}
         run: |
