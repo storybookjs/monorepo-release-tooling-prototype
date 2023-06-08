@@ -1,3 +1,7 @@
+## 7.2.4
+
+- Legal: License for doctors - [#64](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/64), thanks [@JReinhold](https://github.com/JReinhold)!
+
 ## 7.2.3
 
 - Legal: the 2024 license - [#62](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/62), thanks [@kasperpeulen](https://github.com/kasperpeulen)!
