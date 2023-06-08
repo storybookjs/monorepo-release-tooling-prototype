@@ -1,3 +1,7 @@
+## 7.2.2
+
+- Legal: Fix licence once and for all - [#60](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/60), thanks [@kasperpeulen](https://github.com/kasperpeulen)!
+
 ## 7.2.1
 
 - Release: Cleanup scripts - [#53](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/53), thanks [@JReinhold](https://github.com/JReinhold)!
