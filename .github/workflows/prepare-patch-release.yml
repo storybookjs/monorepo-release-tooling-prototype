@@ -128,34 +128,40 @@ jobs:
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr edit \
-            --repo "${{github.repository }}"\
-            --title "Bump version on \`main\`: patch from ${{ steps.versions.outputs.current }} to ${{ steps.versions.outputs.next }}" \
-            --body "${{ steps.description.outputs.description }}" \
-          || \
-          gh pr create \
-            --repo "${{github.repository }}"\
-            --title "Bump version on \`main\`: patch from ${{ steps.versions.outputs.current }} to ${{ steps.versions.outputs.next }}" \
-            --base release/main-v2 \
-            --head version-patch-from-${{ steps.versions.outputs.current }} \
-            --body "${{ steps.description.outputs.description }}"
+          PR_STATE=$(gh pr view --json state --jq .state)
+          if [[ -z "$PR_STATE" || "$PR_STATE" != *"OPEN"* ]]; then
+            gh pr create \
+              --repo "${{github.repository }}"\
+              --title "Bump version on \`main\`: patch from ${{ steps.versions.outputs.current-version }} to ${{ steps.versions.outputs.next-version }}" \
+              --base release/main-v2 \
+              --head version-patch-from-${{ steps.versions.outputs.current-version }} \
+              --body "${{ steps.description.outputs.description }}"
+          else
+            gh pr edit \
+              --repo "${{github.repository }}"\
+              --title "Bump version on \`main\`: patch from ${{ steps.versions.outputs.current-version }} to ${{ steps.versions.outputs.next-version }}" \
+              --body "${{ steps.description.outputs.description }}" \
+          fi
 
       - name: Create or update pull request without release
         if: steps.unreleased-changes.outputs.has-changes-to-release == 'false'
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          gh pr edit \
-            --repo "${{github.repository }}"\
-            --title "Merge patches to \`main\`" \
-            --body "${{ steps.description.outputs.description }}" \
-          || \
-          gh pr create \
-            --repo "${{github.repository }}"\
-            --title "Merge patches to \`main\`" \
-            --base release/main-v2 \
-            --head version-patch-from-${{ steps.versions.outputs.current }} \
-            --body "${{ steps.description.outputs.description }}"
+          PR_STATE=$(gh pr view --json state --jq .state)
+          if [[ -z "$PR_STATE" || "$PR_STATE" != *"OPEN"* ]]; then
+            gh pr create \
+                --repo "${{github.repository }}" \
+                --title "Merge patches to \`main\`" \
+                --base release/main-v2 \
+                --head version-patch-from-${{ steps.versions.outputs.current-version }} \
+                --body "${{ steps.description.outputs.description }}"
+          else
+            gh pr edit \
+                --repo "${{github.repository }}"\
+                --title "Merge patches to \`main\`" \
+                --body "${{ steps.description.outputs.description }}"
+          fi
 
       # - name: Report job failure to Discord
       #   if: failure()
