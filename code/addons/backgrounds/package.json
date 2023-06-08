@@ -1,6 +1,6 @@
 {
   "name": "@junk-temporary-prototypes/addon-backgrounds",
-  "version": "7.2.0",
+  "version": "7.2.1-0",
   "description": "Switch backgrounds to view components in different settings",
   "keywords": [
     "addon",
@@ -76,13 +76,13 @@
     "prep": "../../../scripts/prepare/bundle.ts"
   },
   "dependencies": {
-    "@junk-temporary-prototypes/client-logger": "7.2.0",
-    "@junk-temporary-prototypes/components": "7.2.0",
-    "@junk-temporary-prototypes/core-events": "7.2.0",
-    "@junk-temporary-prototypes/manager-api": "7.2.0",
-    "@junk-temporary-prototypes/preview-api": "7.2.0",
-    "@junk-temporary-prototypes/theming": "7.2.0",
-    "@junk-temporary-prototypes/types": "7.2.0",
+    "@junk-temporary-prototypes/client-logger": "7.2.1-0",
+    "@junk-temporary-prototypes/components": "7.2.1-0",
+    "@junk-temporary-prototypes/core-events": "7.2.1-0",
+    "@junk-temporary-prototypes/manager-api": "7.2.1-0",
+    "@junk-temporary-prototypes/preview-api": "7.2.1-0",
+    "@junk-temporary-prototypes/theming": "7.2.1-0",
+    "@junk-temporary-prototypes/types": "7.2.1-0",
     "@storybook/global": "^5.0.0",
     "memoizerific": "^1.11.3",
     "ts-dedent": "^2.0.0"
@@ -119,5 +119,6 @@
     "unsupportedFrameworks": [
       "react-native"
     ]
-  }
+  },
+  "stableVersion": "7.2.0"
 }

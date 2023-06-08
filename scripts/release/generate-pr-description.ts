@@ -105,7 +105,7 @@ export const mapToChangelist = ({
     .join('\n');
 };
 
-const mapCherryPicksToTodo = ({
+export const mapCherryPicksToTodo = ({
   commits,
   changes,
   verbose,
@@ -180,7 +180,7 @@ export const generateReleaseDescription = ({
   
   When everything above is done:
   - [ ] Merge this PR
-  - [ ] [Approve the publish workflow run](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/publish.yml)
+  - [ ] [Follow the publish workflow run and see it finishes succesfully](https://github.com/storybookjs/monorepo-release-tooling-prototype/actions/workflows/publish.yml)
   
   ---
   
@@ -248,13 +248,15 @@ export const run = async (rawOptions: unknown) => {
     verbose,
   });
 
+  const hasCherryPicks = manualCherryPicks?.length > 0;
+
   const description = nextVersion
     ? generateReleaseDescription({
         currentVersion,
         nextVersion,
         changeList: mapToChangelist({ changes, isRelease: true }),
         changelogText,
-        ...(manualCherryPicks?.length > 0 && {
+        ...(hasCherryPicks && {
           manualCherryPicks: mapCherryPicksToTodo({
             commits: manualCherryPicks,
             changes,
@@ -264,11 +266,11 @@ export const run = async (rawOptions: unknown) => {
       })
     : generateNonReleaseDescription(
         mapToChangelist({ changes, isRelease: false }),
-        mapCherryPicksToTodo({
+        hasCherryPicks ? mapCherryPicksToTodo({
           commits: manualCherryPicks,
           changes,
           verbose,
-        })
+        }) : undefined
       );
 
   if (process.env.GITHUB_ACTIONS === 'true') {

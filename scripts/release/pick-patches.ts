@@ -3,11 +3,11 @@ import program from 'commander';
 import chalk from 'chalk';
 import { v4 as uuidv4 } from 'uuid';
 import type { GraphQlQueryResponseData } from '@octokit/graphql';
-import { graphql } from '@octokit/graphql';
 import ora from 'ora';
 import { simpleGit } from 'simple-git';
 import { getUnpickedPRs } from './utils/get-unpicked-prs';
 import { setOutput } from '@actions/core';
+import { githubGraphQlClient } from './utils/github-client';
 
 program.name('pick-patches').description('Cherry pick patch PRs back to main');
 
@@ -16,10 +16,6 @@ const logger = console;
 const OWNER = 'storybookjs';
 const REPO = 'monorepo-release-tooling-prototype';
 const SOURCE_BRANCH = 'next-v2';
-
-const graphqlWithAuth = graphql.defaults({
-  headers: { authorization: `token ${process.env.GH_TOKEN}` },
-});
 
 const git = simpleGit();
 
@@ -46,7 +42,7 @@ function formatPR(pr: PR): string {
 // @ts-expect-error not used atm
 async function getLabelIds(labelNames: string[]) {
   const query = labelNames.join('+');
-  const result = await graphqlWithAuth<GraphQlQueryResponseData>(
+  const result = await githubGraphQlClient<GraphQlQueryResponseData>(
     `
       query ($owner: String!, $repo: String!, $q: String!) {
         repository(owner: $owner, name: $repo) {
@@ -77,7 +73,7 @@ async function getLabelIds(labelNames: string[]) {
 
 // @ts-expect-error not used atm
 async function labelPR(id: string, labelToId: Record<string, string>) {
-  await graphqlWithAuth(
+  await githubGraphQlClient(
     `
       mutation ($input: AddLabelsToLabelableInput!) {
         addLabelsToLabelable(input: $input) {
@@ -117,24 +113,26 @@ export const run = async (_: unknown) => {
   const failedCherryPicks: string[] = [];
 
   for (const pr of patchPRs) {
-    const spinner = ora(`Cherry picking #${pr.id}`).start();
+    const spinner = ora(`Cherry picking #${pr.number}`).start();
 
     try {
-      await git.raw(['cherry-pick', '-m', '1', pr.mergeCommit]);
+      await git.raw(['cherry-pick', '-m', '1', '-x', pr.mergeCommit]);
       spinner.succeed(`Picked: ${formatPR(pr)}`);
-    } catch (err) {
+    } catch (pickError) {
       spinner.fail(`Failed to automatically pick: ${formatPR(pr)}`);
+      logger.error(pickError.message);
       const abort = ora(`Aborting cherry pick for merge commit: ${pr.mergeCommit}`).start();
       try {
         await git.raw(['cherry-pick', '--abort']);
         abort.stop();
-      } catch (error) {
+      } catch (abortError) {
         abort.warn(`Failed to abort cherry pick (${pr.mergeCommit})`);
+        logger.error(pickError.message);
       }
       failedCherryPicks.push(pr.mergeCommit);
       spinner.info(
         `This PR can be picked manually with: ${chalk.grey(
-          `git cherry-pick -m1 ${pr.mergeCommit}`
+          `git cherry-pick -m1 -x ${pr.mergeCommit}`
         )}`
       );
     }

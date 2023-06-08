@@ -1,5 +1,5 @@
 name: Publish
-run-name: Publish new version, triggered by ${{ github.triggering_actor }}
+run-name: Publish new version on ${{ github.ref_name }}, triggered by ${{ github.triggering_actor }}
 
 on:
   push:
@@ -13,6 +13,7 @@ env:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -69,16 +70,25 @@ jobs:
         if: steps.publish-needed.outputs.published == 'false'
         env:
           YARN_NPM_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: yarn release:publish --tag ${{ steps.is-prerelease.outputs.prerelease && 'next' || 'latest' }} --verbose
+        run: yarn release:publish --tag ${{ steps.is-prerelease.outputs.prerelease == 'true' && 'next' || 'latest' }} --verbose
 
       - name: Get target branch
         id: target
         run: echo "target=${{ github.ref_name == 'release/next-v2' && 'next-v2' || 'main-v2' }}" >> $GITHUB_OUTPUT
 
-      - name: Get changelog for ${{ steps.version.outputs.current-version }}}
+      - name: Get changelog for ${{ steps.version.outputs.current-version }}
         if: steps.publish-needed.outputs.published == 'false'
         id: changelog
         run: yarn release:get-changelog-from-file ${{ steps.version.outputs.current-version }}
+
+      # tags are needed to get list of patches to label as picked
+      - name: Fetch git tags
+        run: git fetch --tags origin
+
+      - name: Label patch PRs as picked
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn release:label-patches
 
       - name: Create GitHub Release
         if: steps.publish-needed.outputs.published == 'false'
@@ -91,9 +101,7 @@ jobs:
             --target ${{ github.ref_name }} \
             --title "v${{ steps.version.outputs.current-version }}" \
             --notes "${{ steps.changelog.outputs.changelog }}" \
-            ${{ steps.is-prerelease.outputs.prerelease && '--prerelease' || '' }}
-
-      #TODO: label picked PRs if patch release
+            ${{ steps.is-prerelease.outputs.prerelease == 'true' && '--prerelease' || '' }}
 
       - name: Merge ${{ github.ref_name }} into ${{ steps.target.outputs.target }}
         run: |
@@ -104,17 +112,13 @@ jobs:
           git merge ${{ github.ref_name }}
           git push origin ${{ steps.target.outputs.target }}
 
-      # Merge from next to main if it is not a prerelease, and this release is from next-release
+      # Force push from next to main if it is not a prerelease, and this release is from next-release
       # This happens when eg. next has been tracking 7.1.0-alpha.X, and now we want to release 7.1.0
       # This will keep next-release, next and main all tracking v7.1.0
-      - name: Merge ${{ steps.target.outputs.target }} into main-v2
+      - name: Force push ${{ steps.target.outputs.target }} to main-v2
         if: steps.publish-needed.outputs.published == 'false' && steps.target.outputs.target == 'next-v2' && !steps.is-prerelease.outputs.prerelease
         run: |
-          git fetch --unshallow
-          git fetch origin main-v2
-          git checkout main-v2
-          git merge ${{ steps.target.outputs.target }}
-          git push origin main-v2
+          git push --force origin ${{ steps.target.outputs.target }}:main-v2
 
       # - name: Report job failure to Discord
       #   if: failure()

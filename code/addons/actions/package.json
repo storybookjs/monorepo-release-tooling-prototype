@@ -1,6 +1,6 @@
 {
   "name": "@junk-temporary-prototypes/addon-actions",
-  "version": "7.2.0",
+  "version": "7.2.1-0",
   "description": "Get UI feedback when an action is performed on an interactive element",
   "keywords": [
     "storybook",
@@ -80,13 +80,13 @@
     "prep": "../../../scripts/prepare/bundle.ts"
   },
   "dependencies": {
-    "@junk-temporary-prototypes/client-logger": "7.2.0",
-    "@junk-temporary-prototypes/components": "7.2.0",
-    "@junk-temporary-prototypes/core-events": "7.2.0",
-    "@junk-temporary-prototypes/manager-api": "7.2.0",
-    "@junk-temporary-prototypes/preview-api": "7.2.0",
-    "@junk-temporary-prototypes/theming": "7.2.0",
-    "@junk-temporary-prototypes/types": "7.2.0",
+    "@junk-temporary-prototypes/client-logger": "7.2.1-0",
+    "@junk-temporary-prototypes/components": "7.2.1-0",
+    "@junk-temporary-prototypes/core-events": "7.2.1-0",
+    "@junk-temporary-prototypes/manager-api": "7.2.1-0",
+    "@junk-temporary-prototypes/preview-api": "7.2.1-0",
+    "@junk-temporary-prototypes/theming": "7.2.1-0",
+    "@junk-temporary-prototypes/types": "7.2.1-0",
     "@storybook/global": "^5.0.0",
     "dequal": "^2.0.2",
     "lodash": "^4.17.21",
@@ -132,5 +132,6 @@
       "react-native"
     ],
     "icon": "https://user-images.githubusercontent.com/263385/101991666-479cc600-3c7c-11eb-837b-be4e5ffa1bb8.png"
-  }
+  },
+  "stableVersion": "7.2.0"
 }
