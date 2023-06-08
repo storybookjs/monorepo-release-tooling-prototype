@@ -1,3 +1,7 @@
+## 7.2.3
+
+- Legal: the 2024 license - [#62](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/62), thanks [@kasperpeulen](https://github.com/kasperpeulen)!
+
 ## 7.2.2
 
 - Legal: Fix licence once and for all - [#60](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/60), thanks [@kasperpeulen](https://github.com/kasperpeulen)!
