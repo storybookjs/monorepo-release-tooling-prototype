@@ -80,6 +80,10 @@ jobs:
         id: changelog
         run: yarn release:get-changelog-from-file ${{ steps.version.outputs.current-version }}
 
+      # tags are needed to get list of patches to label as picked
+      - name: Fetch git tags
+        run: git fetch --tags origin
+
       - name: Label patch PRs as picked
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
