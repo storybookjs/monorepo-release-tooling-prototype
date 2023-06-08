@@ -13,6 +13,7 @@ env:
 
 permissions:
   contents: write
+  pull-requests: write
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref_name }}
@@ -47,6 +48,15 @@ jobs:
         run: |
           yarn install
 
+      # tags are needed to get list of patches to label as picked
+      - name: Fetch git tags
+        run: git fetch --tags origin
+
+      - name: Label patch PRs as picked
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: yarn release:label-patches
+
       - name: Get current version
         id: version
         run: yarn release:get-current-version
@@ -79,15 +89,6 @@ jobs:
         if: steps.publish-needed.outputs.published == 'false'
         id: changelog
         run: yarn release:get-changelog-from-file ${{ steps.version.outputs.current-version }}
-
-      # tags are needed to get list of patches to label as picked
-      - name: Fetch git tags
-        run: git fetch --tags origin
-
-      - name: Label patch PRs as picked
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: yarn release:label-patches
 
       - name: Create GitHub Release
         if: steps.publish-needed.outputs.published == 'false'
