@@ -3,6 +3,7 @@ import * as gitClient_ from './utils/git-client';
 import { LogResult } from 'simple-git';
 import * as githubInfo_ from './utils/get-github-info';
 import * as github_ from './utils/github-client';
+import ansiRegex from 'ansi-regex';
 
 jest.mock('uuid');
 jest.mock('./utils/get-github-info');
@@ -108,22 +109,23 @@ test('it should label the PR associated with cheery picks in the current branch'
       ],
     ]
   `);
+
+  expect.addSnapshotSerializer({
+    serialize: (value) => {
+      const stripAnsi = value.map((it: string) => it.replace(ansiRegex(), ''));
+      return JSON.stringify(stripAnsi, null, 2);
+    },
+    test: () => true,
+  });
+
   expect(writeStderr.mock.calls.map(([text]) => text)).toMatchInlineSnapshot(`
     [
-      "- Looking for latest tag
-    ",
-      "[32m✔[39m Found latest tag: v7.2.1
-    ",
-      "- Looking at cherry pick commits since v7.2.1
-    ",
-      "[32m✔[39m Found the following picks 🍒:
-     Commit: 930b47f011f750c44a1782267d698ccdd3c04da3
-     PR: [#55](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/55)
-    ",
-      "- Labeling the PRs with the picked label...
-    ",
-      "[32m✔[39m Successfully labeled all PRs with the picked label.
-    ",
+      "- Looking for latest tag\\n",
+      "✔ Found latest tag: v7.2.1\\n",
+      "- Looking at cherry pick commits since v7.2.1\\n",
+      "✔ Found the following picks 🍒:\\n Commit: 930b47f011f750c44a1782267d698ccdd3c04da3\\n PR: [#55](https://github.com/storybookjs/monorepo-release-tooling-prototype/pull/55)\\n",
+      "- Labeling the PRs with the picked label...\\n",
+      "✔ Successfully labeled all PRs with the picked label.\\n"
     ]
   `);
 });
