@@ -17,6 +17,7 @@ A Storybook release process based on [Semver](http://semver.org/). In short:
       - Set up launch plan
 
 ## Motivation
+asdf
 
 During the Storybook 3.x transition we've undergone a series of growing pains as
 we've opened up the development process. We've had questions about:
